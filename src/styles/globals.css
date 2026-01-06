@@ -1,0 +1,26 @@
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  /* Better focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-blue-500;
+  }
+
+  /* Basic form input defaults */
+  input, textarea, select {
+    @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+}
+
+@layer components {
+  /* Reusable container */
+  .container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
