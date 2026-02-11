@@ -38,4 +38,12 @@ const STORAGE_KEYS = {
           password,
         });
 
-        
+        const newToken = res.data.token;
+        const newUser = res.data.user;
+  
+        setToken(newToken);
+        setUser(newUser);
+  
+        localStorage.setItem(STORAGE_KEYS.token, newToken);
+        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(newUser));
+  
