@@ -7,11 +7,7 @@ import { useEffect } from 'react';
 
 
 function App() {
-  const { user, token } = useAuth();
-
-  useEffect(() => {
-    console.log('Auth debug:', { user, token });
-  }, [user, token]);
+ 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
