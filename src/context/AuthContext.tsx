@@ -23,3 +23,19 @@ const STORAGE_KEYS = {
   token: 'auth_token',
   user: 'auth_user',
 } as const;
+
+ //backend-ready
+
+  const login = async ({ email, password }: LoginCredentials) => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+       // exact endpoint , response format.
+        
+        const res = await axiosClient.post<{ token: string; user: User }>('/auth/login', {
+          email,
+          password,
+        });
+
+        
