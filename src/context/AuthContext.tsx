@@ -32,6 +32,12 @@ function safeJsonParse<T>(value: string | null): T | null {
       return null;
     }
   }
+  export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
  //backend-ready
 
   const login = async ({ email, password }: LoginCredentials) => {
