@@ -1,23 +1,8 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import axiosClient from '../lib/axios';
 import type { User } from '../types/user.types';
-
-type LoginCredentials = {
-    email: string;
-    password: string;
-  };
-  type AuthContextValue = {
-    user: User | null;
-    token: string | null;
-    isLoading: boolean;
-    error: string | null;
-
-    login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => void;
-  clearError: () => void;
-};
-
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+import { AuthContext } from './authContext';
+import type { AuthContextValue, LoginCredentials } from './authContext';
 
 const STORAGE_KEYS = {
   token: 'auth_token',
