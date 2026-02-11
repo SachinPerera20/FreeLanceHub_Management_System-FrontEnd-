@@ -47,3 +47,11 @@ const STORAGE_KEYS = {
         localStorage.setItem(STORAGE_KEYS.token, newToken);
         localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(newUser));
   
+    } catch (err: unknown) {
+        // Human-friendly message (don’t leak raw error objects into UI)
+        setError('Login failed. Please check your email/password and try again.');
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    };
