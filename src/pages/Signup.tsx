@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useEffect } from "react";
+import { useFreelancer } from "../context/FreelancerContext";
 
 declare global {
   interface Window {
@@ -16,15 +17,16 @@ declare global {
 
 }
 
-function Signup(): React.ReactElement {
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [accepted, setAccepted] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState<boolean>(false);
+function Signup() {
+  const { setFreelancer } = useFreelancer();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [accepted, setAccepted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({} as Record<string, string>);
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
 
   const validateEmail = (value: string) => {
@@ -48,7 +50,7 @@ function Signup(): React.ReactElement {
 
   const isFormValid = useMemo(() => Object.keys(formErrors).length === 0, [formErrors]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors({});
     setSuccess(null);
@@ -62,7 +64,22 @@ function Signup(): React.ReactElement {
     try {
       // Simulate API call — replace with real API integration
       await new Promise((res) => setTimeout(res, 900));
-      setSuccess("Account created successfully. Check your email to verify your account.");
+      
+      // Store freelancer data to context and localStorage
+      const freelancerId = `freelancer_${Date.now()}`;
+      setFreelancer({
+        id: freelancerId,
+        name,
+        email,
+        title: "Full-Stack Developer",
+        totalEarned: 12500,
+        completionRate: 95,
+        activeProjects: 5,
+      });
+      
+      setSuccess("Account created successfully! Moving to dashboard...");
+      
+      // Clear form
       setName("");
       setEmail("");
       setPassword("");
@@ -193,7 +210,7 @@ function Signup(): React.ReactElement {
         <div style={styles.row}>
           <div style={styles.inputGroup}>
             <label htmlFor="name">Full name</label>
-            <input
+              <input
               id="name"
               name="name"
               type="text"
