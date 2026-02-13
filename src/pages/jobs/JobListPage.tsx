@@ -1,10 +1,54 @@
+import { useMemo, useState } from 'react';
+import { MOCK_JOBS } from '../../mocks/jobs.mock';
+import JobCard from '../../components/jobs/JobCard';
+
 export default function JobListPage() {
-    return (
-      <div className="rounded-xl border bg-white p-6 shadow-sm">
-        <h1 className="text-xl font-semibold text-gray-900 mb-4">Job Listings</h1>
-        <p className="text-gray-600">
-          This is where available jobs will be displayed.
+  const [search, setSearch] = useState('');
+
+  const filteredJobs = useMemo(() => {
+    const lower = search.toLowerCase();
+
+    return MOCK_JOBS.filter(
+      (job) =>
+        job.title.toLowerCase().includes(lower) ||
+        job.description.toLowerCase().includes(lower) ||
+        job.skills.some((skill) => skill.toLowerCase().includes(lower))
+    );
+  }, [search]);
+
+  return (
+    <div className="space-y-6">
+      {/* Page Title */}
+      <div>
+        <h1 className="text-2xl font-semibold text-gray-900">Browse Jobs</h1>
+        <p className="text-sm text-gray-600">
+          Find opportunities that match your skills.
         </p>
       </div>
-    );
-  }
+
+      {/* Search */}
+      <div>
+        <input
+          type="text"
+          placeholder="Search by title, description, or skill..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full rounded-lg border px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      {/* Jobs Grid */}
+      {filteredJobs.length === 0 ? (
+        <div className="rounded-xl border bg-white p-6 text-center text-gray-600">
+          No jobs found.
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredJobs.map((job) => (
+            <JobCard key={job.id} job={job} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
