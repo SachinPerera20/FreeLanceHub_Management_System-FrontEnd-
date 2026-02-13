@@ -16,3 +16,4 @@ export default function App() {
   );
 }
 
+// continue from layout components in chatgpt project chat - 7.5
