@@ -29,6 +29,8 @@ export default function CreateJobPage() {
 
   }
 };
+addJob(newJob);
 
+    navigate('/jobs');
+  };
 
-}
