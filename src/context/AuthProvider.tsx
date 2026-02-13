@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import axiosClient from '../lib/axios';
 import type { User } from '../types/user.types';
 import { AuthContext, STORAGE_KEYS, safeJsonParse } from './auth.context';
-import type { AuthContextValue, LoginCredentials } from './auth.context';
+import type { AuthContextValue, LoginCredentials, RegisterPayload } from './auth.context';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -43,6 +43,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // ✅ define register BEFORE useMemo value
+  const registerUser = async ({ email, password, name, role }: RegisterPayload) => {
+    setIsLoading(true);
+    setError(null);
+
+    // mock-only: we accept password but don't use it yet
+    void password;
+
+    try {
+      const now = new Date().toISOString();
+
+      const mockUser: User = {
+        id: Date.now().toString(),
+        name,
+        email,
+        role,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const mockToken = 'mock-jwt-token';
+
+      setUser(mockUser);
+      setToken(mockToken);
+
+      localStorage.setItem(STORAGE_KEYS.token, mockToken);
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(mockUser));
+    } catch (err) {
+      setError('Registration failed.');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -53,56 +88,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, token, isLoading, error, login, logout, clearError, register}),
+    () => ({
+      user,
+      token,
+      isLoading,
+      error,
+      login,
+      register: registerUser,
+      logout,
+      clearError,
+    }),
     [user, token, isLoading, error]
   );
-
-  const register = async ({
-    email,
-    password,
-    name,
-    role,
-    
-  }: {
-    email: string;
-    password: string;
-    name: string;
-    role: 'client' | 'freelancer';
-    
-  }) => {
-    setIsLoading(true);
-    setError(null);
-    void password; // password will be used when backend register API is connected
-  
-    try {
-      // MOCK MODE 
-  
-      const now = new Date().toISOString();
-
-const mockUser: User = {
-  id: Date.now().toString(),
-  name,
-  email,
-  role,
-  createdAt: now,
-  updatedAt: now,
-};
-  
-      const mockToken = 'mock-jwt-token';
-  
-      setUser(mockUser);
-      setToken(mockToken);
-  
-      localStorage.setItem(STORAGE_KEYS.token, mockToken);
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(mockUser));
-    } catch (err) {
-      setError('Registration failed.');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

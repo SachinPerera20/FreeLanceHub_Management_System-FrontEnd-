@@ -6,6 +6,13 @@ export type LoginCredentials = {
   password: string;
 };
 
+export type RegisterPayload = {
+  email: string;
+  password: string;
+  name: string;
+  role: 'client' | 'freelancer';
+};
+
 export type AuthContextValue = {
   user: User | null;
   token: string | null;
@@ -13,13 +20,8 @@ export type AuthContextValue = {
   error: string | null;
 
   login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterPayload) => Promise<void>;
   logout: () => void;
-  register: (data: {
-    email: string;
-    password: string;
-    name: string;
-    role: 'client' | 'freelancer';
-  }) => Promise<void>;
   clearError: () => void;
 };
 
