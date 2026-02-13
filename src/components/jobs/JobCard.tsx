@@ -19,7 +19,8 @@ function formatTimeAgo(dateString: string) {
 
 export default function JobCard({ job }: JobCardProps) {
   return (
-    <div className="rounded-xl border bg-white p-5 shadow-sm hover:shadow-md transition">
+    <div className="h-full rounded-xl border bg-white p-5 shadow-sm hover:shadow-md transition flex flex-col">
+
       {/* Title */}
       <h2 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
         {job.title}
@@ -43,7 +44,8 @@ export default function JobCard({ job }: JobCardProps) {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-sm text-gray-500">
+      <div className="mt-auto flex items-center justify-between text-sm text-gray-500">
+
         <span>Rs. {job.budget}</span>
         <span>{formatTimeAgo(job.createdAt)}</span>
       </div>

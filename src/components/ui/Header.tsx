@@ -33,7 +33,7 @@ export default function Header() {
             </>
           ) : (
             <>
-  <NavLink to="/jobs" className={linkClass}>
+  <NavLink to="/jobs" end className={linkClass}>
     Jobs
   </NavLink>
 
