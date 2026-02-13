@@ -53,9 +53,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, token, isLoading, error, login, logout, clearError }),
+    () => ({ user, token, isLoading, error, login, logout, clearError, register}),
     [user, token, isLoading, error]
   );
+
+  const register = async ({
+    email,
+    password,
+    name,
+    role,
+  }: {
+    email: string;
+    password: string;
+    name: string;
+    role: 'client' | 'freelancer';
+  }) => {
+    setIsLoading(true);
+    setError(null);
+  
+    try {
+      // MOCK MODE (Frontend-only phase)
+  
+      const mockUser = {
+        id: Date.now().toString(),
+        name,
+        email,
+        role,
+        createdAt: new Date().toISOString(),
+      };
+  
+      const mockToken = 'mock-jwt-token';
+  
+      setUser(mockUser);
+      setToken(mockToken);
+  
+      localStorage.setItem(STORAGE_KEYS.token, mockToken);
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(mockUser));
+    } catch (err) {
+      setError('Registration failed.');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
