@@ -62,25 +62,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password,
     name,
     role,
+    
   }: {
     email: string;
     password: string;
     name: string;
     role: 'client' | 'freelancer';
+    
   }) => {
     setIsLoading(true);
     setError(null);
+    void password; // password will be used when backend register API is connected
   
     try {
-      // MOCK MODE (Frontend-only phase)
+      // MOCK MODE 
   
-      const mockUser = {
-        id: Date.now().toString(),
-        name,
-        email,
-        role,
-        createdAt: new Date().toISOString(),
-      };
+      const now = new Date().toISOString();
+
+const mockUser: User = {
+  id: Date.now().toString(),
+  name,
+  email,
+  role,
+  createdAt: now,
+  updatedAt: now,
+};
   
       const mockToken = 'mock-jwt-token';
   

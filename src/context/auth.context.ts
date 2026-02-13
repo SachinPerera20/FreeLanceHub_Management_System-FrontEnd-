@@ -14,6 +14,12 @@ export type AuthContextValue = {
 
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => void;
+  register: (data: {
+    email: string;
+    password: string;
+    name: string;
+    role: 'client' | 'freelancer';
+  }) => Promise<void>;
   clearError: () => void;
 };
 
