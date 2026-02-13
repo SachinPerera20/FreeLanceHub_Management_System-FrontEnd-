@@ -16,5 +16,14 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         clearError();
+
+        try {
+            await register({ name, email, password, role });
+            navigate('/profile');
+          }
+        
+          catch {
+            // error handled in context
+          }
     
 }
