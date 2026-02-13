@@ -12,7 +12,6 @@ export default function CreateJobPage() {
   const [description, setDescription] = useState('');
   const [budget, setBudget] = useState('');
 
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -26,11 +25,53 @@ export default function CreateJobPage() {
       skills: [],
       createdAt: new Date().toISOString(),
       clientId: user.id,
+      clientName: user.name,
+    };
 
-  }
-};
-addJob(newJob);
+    addJob(newJob);
 
     navigate('/jobs');
   };
 
+  return (
+    <div className="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-sm border">
+      <h1 className="text-2xl font-semibold mb-6">Create New Job</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Job Title"
+          className="w-full border rounded px-3 py-2"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+
+        <textarea
+          placeholder="Job Description"
+          className="w-full border rounded px-3 py-2"
+          rows={4}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
+
+        <input
+          type="number"
+          placeholder="Budget"
+          className="w-full border rounded px-3 py-2"
+          value={budget}
+          onChange={(e) => setBudget(e.target.value)}
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+        >
+          Post Job
+        </button>
+      </form>
+    </div>
+  );
+}
