@@ -57,6 +57,28 @@ export default function Register() {
           required
         />
 
+         <div className="flex gap-4 text-sm">
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              value="freelancer"
+              checked={role === 'freelancer'}
+              onChange={() => setRole('freelancer')}
+            />
+            Freelancer
+          </label>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              value="client"
+              checked={role === 'client'}
+              onChange={() => setRole('client')}
+            />
+            Client
+          </label>
+        </div>
+
         </form>
 
 
