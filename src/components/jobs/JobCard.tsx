@@ -1,13 +1,16 @@
 import type { MockJob } from '../../mocks/jobs.mock';
 import { useNavigate } from 'react-router-dom'
 
-const navigate = useNavigate();
+
 
 type JobCardProps = {
   job: MockJob;
 };
 
 function formatTimeAgo(dateString: string) {
+
+    const navigate = useNavigate();
+    
   const diff = Date.now() - new Date(dateString).getTime();
 
   const minutes = Math.floor(diff / (1000 * 60));
