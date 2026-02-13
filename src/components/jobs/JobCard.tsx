@@ -1,6 +1,8 @@
 import type { MockJob } from '../../mocks/jobs.mock';
 import { useNavigate } from 'react-router-dom'
 
+const navigate = useNavigate();
+
 type JobCardProps = {
   job: MockJob;
 };
