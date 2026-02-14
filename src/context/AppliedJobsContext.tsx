@@ -32,3 +32,4 @@ type AppliedJobsContextType = {
         });
       };
     
+      const isApplied = (jobId: string) => appliedJobIds.includes(jobId);
