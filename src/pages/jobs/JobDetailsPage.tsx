@@ -27,7 +27,12 @@ export default function JobDetailsPage() {
             {skill}
           </span>
         ))}
-      </div>
+             </div>
+
+
+             <p className="text-gray-700 leading-relaxed">    {job.description} </p>
+
+             
         </div>
 
           
