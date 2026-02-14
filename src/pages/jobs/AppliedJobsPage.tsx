@@ -19,7 +19,7 @@ export default function AppliedJobsPage() {
             to="/jobs"
             className="text-sm text-gray-600 hover:text-black transition"
           >
-            ← Back to Jobs
+            Back to Jobs
           </Link>
         </div>
 

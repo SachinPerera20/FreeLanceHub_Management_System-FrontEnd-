@@ -21,12 +21,23 @@ export default function JobListPage() {
   return (
     <div className="space-y-6">
       {/* Page Title */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Browse Jobs</h1>
-        <p className="text-sm text-gray-600">
-          Find opportunities that match your skills.
-        </p>
-      </div>
+      <div className="flex items-start justify-between">
+  <div>
+    <h1 className="text-2xl font-semibold text-gray-900">
+      Browse Jobs
+    </h1>
+    <p className="text-sm text-gray-600">
+      Find opportunities that match your skills.
+    </p>
+  </div>
+
+  <Link
+    to="/jobs/applied"
+    className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-sm font-semibold transition"
+  >
+    Applied Jobs
+  </Link>
+</div>
 
       {/* Search */}
       <div>
