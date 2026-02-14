@@ -11,4 +11,7 @@ export default function ContractDetailsPage() {
         return <div className="p-6">Please login to view contract details.</div>;
       }
 
+      if (!contractId) {
+        return <div className="p-6">Invalid contract</div>;
+      }
 }  
