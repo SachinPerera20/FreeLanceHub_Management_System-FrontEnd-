@@ -135,6 +135,18 @@ export default function ContractDetailsPage() {
           </div>
         ) : null}
       </div>
+      {contract.status !== "completed" && contract.clientId === user.id ? (
+  <div className="pt-4 border-t">
+    <button
+      type="button"
+      onClick={handleComplete}
+      className="px-6 py-3 rounded-xl bg-black text-white font-semibold hover:opacity-90"
+    >
+      Complete Contract
+    </button>
+  </div>
+) : null}
+
     </div>
   );
 
