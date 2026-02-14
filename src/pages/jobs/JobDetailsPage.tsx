@@ -10,6 +10,7 @@ export default function JobDetailsPage() {
     const { jobs } = useJobs();
     const { applyToJob, isApplied } = useAppliedJobs();
     const job = jobs.find(j => j.id === jobId);
+    const { user } = useAuth();
 
     if (!job) {
         
