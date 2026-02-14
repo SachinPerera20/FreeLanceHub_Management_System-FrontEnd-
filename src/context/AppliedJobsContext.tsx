@@ -6,3 +6,5 @@ type AppliedJobsContextType = {
     isApplied: (jobId: string) => boolean;
     removeApplication: (jobId: string) => void;
   };
+
+  const AppliedJobsContext = createContext<AppliedJobsContextType | undefined>(undefined);
