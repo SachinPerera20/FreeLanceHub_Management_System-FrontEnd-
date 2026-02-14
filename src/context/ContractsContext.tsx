@@ -24,6 +24,7 @@ type ContractsContextValue = {
   ) => void;
 };
 
+
 const ContractsContext = createContext<ContractsContextValue | undefined>(undefined);
 
 function safeParseContracts(raw: string | null): Contract[] {
@@ -109,6 +110,19 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
   const getContractById: ContractsContextValue["getContractById"] = (id) => {
     return contracts.find((c) => c.id === id);
   };
+  const updateContract: ContractsContextValue["updateContract"] = (contractId, patch) => {
+    setContracts((prev) => {
+      const now = new Date().toISOString();
+  
+      const updated: Contract[] = prev.map((c) =>
+        c.id === contractId ? ({ ...c, ...patch, updatedAt: now } as Contract) : c
+      );
+  
+      saveContracts(updated);
+      return updated;
+    });
+  };
+  
 
   const value: ContractsContextValue = {
     contracts,
