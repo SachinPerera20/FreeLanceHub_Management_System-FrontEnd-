@@ -6,6 +6,7 @@ export type MockJob = {
     skills: string[];
     clientName: string;
     createdAt: string; // ISO string
+    createdBy: string;
   };
   
   export const MOCK_JOBS: MockJob[] = [
@@ -18,6 +19,8 @@ export type MockJob = {
       skills: ['React', 'Tailwind', 'UI'],
       clientName: 'Nimal Perera',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2h ago
+      createdBy: "user000"
+      
     },
     {
       id: 'job_002',
@@ -28,6 +31,7 @@ export type MockJob = {
       skills: ['Node.js', 'Express', 'JWT'],
       clientName: 'Amaya Silva',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 9).toISOString(), // 9h ago
+      createdBy: "user001"
     },
     {
       id: 'job_003',
@@ -38,6 +42,7 @@ export type MockJob = {
       skills: ['Power BI', 'Data', 'Dashboard'],
       clientName: 'Kavindu Jayasuriya',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 28).toISOString(), // 28h ago
+      createdBy: "user002"
     },
     {
       id: 'job_004',
@@ -48,6 +53,7 @@ export type MockJob = {
       skills: ['React', 'Performance', 'TypeScript'],
       clientName: 'Sachini Fernando',
       createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(), // 15m ago
+      createdBy: "user003"
     },
     {
       id: 'job_005',
@@ -58,6 +64,7 @@ export type MockJob = {
       skills: ['Tailwind', 'Design', 'UI Kit'],
       clientName: 'Ravindu Perera',
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(), // 3d ago
+      createdBy: "user004"
     },
   ];
   

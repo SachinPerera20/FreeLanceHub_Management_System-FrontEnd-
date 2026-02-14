@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useJobs } from '../../hooks/useJobs';
 import { useAuth } from '../../hooks/useAuth';
 
+
 export default function CreateJobPage() {
   const navigate = useNavigate();
   const { addJob } = useJobs();
@@ -26,6 +27,7 @@ export default function CreateJobPage() {
       createdAt: new Date().toISOString(),
       clientId: user.id,
       clientName: user.name,
+      createdBy: user!.id,
     };
 
     addJob(newJob);

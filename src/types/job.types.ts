@@ -31,6 +31,7 @@ export interface Job {
   createdAt: string;
   updatedAt: string;
   deadline?: string;
+  createdBy: string;
 }
 
 

@@ -68,6 +68,15 @@ export default function JobDetailsPage() {
     </Link>
   )}
 
+{user?.role === "client" ? (
+  <Link
+    to={`/jobs/${job.id}/proposals`}
+    className="inline-flex items-center justify-center w-full sm:w-auto px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 font-semibold"
+  >
+    View Proposals
+  </Link>
+) : null}
+
 
         </div>
 
