@@ -60,17 +60,37 @@ export function ProposalsProvider({ children }: { children: React.ReactNode }) {
   
     
     const updateProposalStatus: ProposalsContextValue["updateProposalStatus"] = (
-      proposalId,
-      status
-    ) => {
-      setProposals((prev) => {
-        const updated = prev.map((p) =>
-          p.id === proposalId ? { ...p, status } : p
-        );
-        saveProposals(updated);
-        return updated;
-      });
-    };
+        proposalId,
+        status
+      ) => {
+        const ACCEPTED = "accepted" as Proposal["status"];
+        const REJECTED = "rejected" as Proposal["status"];
+      
+        setProposals((prev) => {
+          const target = prev.find((p) => p.id === proposalId);
+          if (!target) return prev;
+      
+          const updated: Proposal[] = prev.map((p) => {
+            // update the chosen proposal
+            if (p.id === proposalId) {
+              return { ...p, status } as Proposal;
+            }
+      
+            // if accepting one proposal, reject the rest for the same job
+            if (status === ACCEPTED && p.jobId === target.jobId) {
+              return { ...p, status: REJECTED } as Proposal;
+            }
+      
+            return p;
+          });
+      
+          saveProposals(updated);
+          return updated;
+        });
+      };
+      
+      
+      
   
     
     const value: ProposalsContextValue = {
