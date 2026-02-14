@@ -33,3 +33,9 @@ type AppliedJobsContextType = {
       };
     
       const isApplied = (jobId: string) => appliedJobIds.includes(jobId);
+
+      const value = useMemo(
+        () => ({ appliedJobIds, applyToJob, isApplied, removeApplication }),
+        [appliedJobIds]
+      );
+    
