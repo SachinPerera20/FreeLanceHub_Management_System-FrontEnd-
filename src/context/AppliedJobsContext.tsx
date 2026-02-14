@@ -8,3 +8,9 @@ type AppliedJobsContextType = {
   };
 
   const AppliedJobsContext = createContext<AppliedJobsContextType | undefined>(undefined);
+
+  export function AppliedJobsProvider({ children }: { children: React.ReactNode }) {
+    const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => {
+      const stored = localStorage.getItem("appliedJobIds");
+      return stored ? JSON.parse(stored) : [];
+    });
