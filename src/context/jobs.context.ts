@@ -11,7 +11,7 @@ export type JobsContextValue = {
 
   updateJobStatus: (
     jobId: string,
-    status: MockJob["status"]
+    status: JobStatus
   ) => void;
 };
 
