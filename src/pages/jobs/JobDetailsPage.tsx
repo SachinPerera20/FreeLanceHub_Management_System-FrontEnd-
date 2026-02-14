@@ -1,16 +1,20 @@
 import { useParams } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";
-import { useAppliedJobs } from "../../context/AppliedJobsContext";
+import { useAppliedJobs } from "../../hooks/useAppliedJobs";
 
 export default function JobDetailsPage() {
 
     const { jobId } = useParams();
     const { jobs } = useJobs();
+    const { applyToJob, isApplied } = useAppliedJobs();
     const job = jobs.find(j => j.id === jobId);
 
     if (!job) {
+        
         return <div className="p-6">Job not found</div>;
       }
+
+      const applied = isApplied(job.id);
 
       return (
         <div className="max-w-4xl mx-auto p-6">
@@ -33,7 +37,18 @@ export default function JobDetailsPage() {
 
              <p className="text-gray-700 leading-relaxed">    {job.description} </p>
 
-             <button className="mt-6 px-6 py-3 bg-black text-white rounded-lg hover:opacity-90">    Apply Now    </button>
+             <button
+        disabled={applied}
+        onClick={() => applyToJob(job.id)}
+        className={`w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition
+          ${applied
+            ? "bg-green-100 text-green-700 cursor-not-allowed"
+            : "bg-black text-white hover:opacity-90"
+          }`}
+      >
+        {applied ? "Applied ✅" : "Apply Now"}
+      
+        </button>
 
         </div>
 

@@ -1,53 +1,48 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from 'react';
+import { AppliedJobsContext } from './appliedJobs.context';
+import type { AppliedJobsContextType } from './appliedJobs.context';
 
-type AppliedJobsContextType = {
-    appliedJobIds: string[];
-    applyToJob: (jobId: string) => void;
-    isApplied: (jobId: string) => boolean;
-    removeApplication: (jobId: string) => void;
-  };
+export function AppliedJobsProvider({ children }: { children: React.ReactNode }) {
+  // Initialize applied job IDs from localStorage
+  const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => {
+    const stored = localStorage.getItem('appliedJobIds');
+    return stored ? JSON.parse(stored) : [];
+  });
 
-  const AppliedJobsContext = createContext<AppliedJobsContextType | undefined>(undefined);
-
-  export function AppliedJobsProvider({ children }: { children: React.ReactNode }) {
-    const [appliedJobIds, setAppliedJobIds] = useState<string[]>(() => {
-      const stored = localStorage.getItem("appliedJobIds");
-      return stored ? JSON.parse(stored) : [];
+  // Add a job to the applied list
+  const applyToJob = useCallback((jobId: string) => {
+    setAppliedJobIds((prev) => {
+      if (prev.includes(jobId)) return prev;
+      const updated = [...prev, jobId];
+      localStorage.setItem('appliedJobIds', JSON.stringify(updated));
+      return updated;
     });
+  }, []);
 
-    const applyToJob = (jobId: string) => {
-        setAppliedJobIds(prev => {
-          if (prev.includes(jobId)) return prev;
-          const updated = [...prev, jobId];
-          localStorage.setItem("appliedJobIds", JSON.stringify(updated));
-          return updated;
-        });
-      };
+  // Remove a job from the applied list
+  const removeApplication = useCallback((jobId: string) => {
+    setAppliedJobIds((prev) => {
+      const updated = prev.filter((id) => id !== jobId);
+      localStorage.setItem('appliedJobIds', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
 
-      const removeApplication = (jobId: string) => {
-        setAppliedJobIds(prev => {
-          const updated = prev.filter(id => id !== jobId);
-          localStorage.setItem("appliedJobIds", JSON.stringify(updated));
-          return updated;
-        });
-      };
-    
-      const isApplied = (jobId: string) => appliedJobIds.includes(jobId);
+  // Check if a job is already applied
+  const isApplied = useCallback(
+    (jobId: string) => appliedJobIds.includes(jobId),
+    [appliedJobIds]
+  );
 
-      const value = useMemo(
-        () => ({ appliedJobIds, applyToJob, isApplied, removeApplication }),
-        [appliedJobIds]
-      );
-    
-      return (
-        <AppliedJobsContext.Provider value={value}>
-          {children}
-        </AppliedJobsContext.Provider>
-      );
-    }
-    
-    export function useAppliedJobs() {
-      const ctx = useContext(AppliedJobsContext);
-      if (!ctx) throw new Error("useAppliedJobs must be used inside AppliedJobsProvider");
-      return ctx;
-    }
+  // Memoize the context value to prevent unnecessary re-renders
+  const value = useMemo<AppliedJobsContextType>(
+    () => ({ appliedJobIds, applyToJob, isApplied, removeApplication }),
+    [appliedJobIds, applyToJob, isApplied, removeApplication]
+  );
+
+  return (
+    <AppliedJobsContext.Provider value={value}>
+      {children}
+    </AppliedJobsContext.Provider>
+  );
+}
