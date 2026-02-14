@@ -20,7 +20,8 @@ export default function JobProposalsPage() {
       return getProposalsByJobId(jobId);
     }, [jobId, getProposalsByJobId]);
 
-     
+    if (!jobId) return <div className="p-6">Invalid job</div>;
+    if (!job) return <div className="p-6">Job not found</div>;
 
 
 }
