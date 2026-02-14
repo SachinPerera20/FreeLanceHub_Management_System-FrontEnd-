@@ -6,6 +6,7 @@ import App from './App';
 import { AuthProvider } from './context/AuthProvider';
 import { JobsProvider } from './context/JobsContext';
 import { AppliedJobsProvider } from "./context/AppliedJobsContext";
+import { ProposalsProvider } from "./context/ProposalsContext";
 
 
 const el = document.getElementById('root');
