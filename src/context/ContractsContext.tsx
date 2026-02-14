@@ -32,3 +32,22 @@ const ContractsContext = createContext<ContractsContextValue | undefined>(
   function generateContractId() {
     return `ctr_${Math.random().toString(16).slice(2, 8)}_${Date.now()}`;
   }
+
+  export function ContractsProvider({ children }: { children: React.ReactNode }) {
+    const [contracts, setContracts] = useState<Contract[]>(() =>
+      safeParseContracts(localStorage.getItem(STORAGE_KEY))
+    );
+  
+    const addContract: ContractsContextValue["addContract"] = (data) => {
+      const newContract: Contract = {
+        id: generateContractId(),
+        ...data,
+        status: "active",
+        createdAt: new Date().toISOString(),
+      };
+  
+      setContracts((prev) => {
+        const updated = [newContract, ...prev];
+        saveContracts(updated);
+        return updated;
+      });
