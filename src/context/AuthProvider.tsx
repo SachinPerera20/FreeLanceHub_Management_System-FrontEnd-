@@ -1,8 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import axiosClient from '../lib/axios';
-import type { User } from '../types/user.types';
-import { AuthContext, STORAGE_KEYS, safeJsonParse } from './auth.context';
-import type { AuthContextValue, LoginCredentials, RegisterPayload } from './auth.context';
+import React, { useEffect, useMemo, useState } from "react";
+import type { User } from "../types/user.types";
+import { AuthContext, STORAGE_KEYS, safeJsonParse } from "./auth.context";
+import type { AuthContextValue, LoginCredentials, RegisterPayload } from "./auth.context";
+
+const USERS_KEY = "freelancehub_users";
+
+function safeParseArray<T>(raw: string | null): T[] {
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as T[];
+  } catch {
+    return [];
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -25,54 +35,73 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
 
     try {
-      const res = await axiosClient.post<{ token: string; user: User }>('/auth/login', {
-        email,
-        password,
-      });
+      const users = safeParseArray<(User & { password?: string })>(
+        localStorage.getItem(USERS_KEY)
+      );
 
-      setToken(res.data.token);
-      setUser(res.data.user);
+      const found = users.find((u) => u.email === email);
 
-      localStorage.setItem(STORAGE_KEYS.token, res.data.token);
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(res.data.user));
-    } catch (err) {
-      setError('Login failed. Please check your credentials and try again.');
-      throw err;
+      if (!found) {
+        setError("No account found for this email.");
+        throw new Error("No account found");
+      }
+
+      // mock auth: we store password in localStorage for login testing only
+      if ((found.password ?? "") !== password) {
+        setError("Incorrect password.");
+        throw new Error("Incorrect password");
+      }
+
+      const mockToken = `mock_${found.id}`;
+
+      setUser(found);
+      setToken(mockToken);
+
+      localStorage.setItem(STORAGE_KEYS.token, mockToken);
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(found));
     } finally {
       setIsLoading(false);
     }
   };
 
-  //define register BEFORE useMemo value
   const registerUser = async ({ email, password, name, role }: RegisterPayload) => {
     setIsLoading(true);
     setError(null);
 
-    // mock-only: we accept password but don't use it yet
-    void password;
-
     try {
       const now = new Date().toISOString();
 
-      const mockUser: User = {
+      const users = safeParseArray<(User & { password?: string })>(
+        localStorage.getItem(USERS_KEY)
+      );
+
+      const exists = users.some((u) => u.email === email);
+      if (exists) {
+        setError("This email is already registered.");
+        throw new Error("Email already registered");
+      }
+
+      // include password in localStorage ONLY for mock login testing
+      const newUser: User & { password: string } = {
         id: Date.now().toString(),
         name,
         email,
         role,
         createdAt: now,
         updatedAt: now,
+        password,
       };
 
-      const mockToken = 'mock-jwt-token';
+      const updatedUsers = [...users, newUser];
+      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
 
-      setUser(mockUser);
+      const mockToken = `mock_${newUser.id}`;
+
+      setUser(newUser);
       setToken(mockToken);
 
       localStorage.setItem(STORAGE_KEYS.token, mockToken);
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(mockUser));
-    } catch (err) {
-      setError('Registration failed.');
-      throw err;
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(newUser));
     } finally {
       setIsLoading(false);
     }
