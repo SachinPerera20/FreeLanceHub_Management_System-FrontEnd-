@@ -10,6 +10,7 @@ import NotFound from './pages/NotFound';
 import JobListPage from './pages/jobs/JobListPage';
 import CreateJobPage from './pages/jobs/CreateJobPage';
 import ContractListPage from './pages/contracts/ContractListPage';
+import JobDetailsPage from './pages/jobs/JobDetailsPage';
 
 export default function App() {
   return (
@@ -30,6 +31,8 @@ export default function App() {
       <Route path="jobs/create" element={<ProtectedRoute requiredRole="client"> <CreateJobPage /></ProtectedRoute> } />
 
       <Route path="contracts" element= {<ProtectedRoute> <ContractListPage /> </ProtectedRoute>}/>
+
+      <Route path="/jobs/:jobId" element={<JobDetailsPage />} />
 
       </Route>
 
