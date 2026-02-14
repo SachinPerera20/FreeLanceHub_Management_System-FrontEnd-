@@ -7,7 +7,7 @@ import { useJobs } from "../../hooks/useJobs";
 export default function ContractDetailsPage() {
     const { contractId } = useParams();
     const { user } = useAuth();
-    const { getContractById } = useContracts();
+    const { getContractById, updateContract } = useContracts();
 
     if (!user) {
         return <div className="p-6">Please login to view contract details.</div>;
