@@ -10,6 +10,7 @@ import JobListPage from './pages/jobs/JobListPage';
 import CreateJobPage from './pages/jobs/CreateJobPage';
 import ContractListPage from './pages/contracts/ContractListPage';
 import JobDetailsPage from './pages/jobs/JobDetailsPage';
+import AppliedJobsPage from "./pages/jobs/AppliedJobsPage";
 
 export default function App() {
   return (
