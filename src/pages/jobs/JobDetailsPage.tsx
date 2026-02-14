@@ -10,4 +10,10 @@ export default function JobDetailsPage() {
     if (!job) {
         return <div className="p-6">Job not found</div>;
       }
+
+      return (
+        
+
+
+      );
 }
