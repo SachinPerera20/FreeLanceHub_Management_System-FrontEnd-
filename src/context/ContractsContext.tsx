@@ -10,3 +10,7 @@ type ContractsContextValue = {
   addContract: (data: CreateContractInput) => Contract;
   getContractsByUser: (userId: string) => Contract[];
 };
+
+const ContractsContext = createContext<ContractsContextValue | undefined>(
+    undefined
+  );
