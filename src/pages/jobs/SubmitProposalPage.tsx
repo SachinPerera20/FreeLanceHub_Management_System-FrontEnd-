@@ -41,5 +41,16 @@ export default function SubmitProposalPage() {
         setError("Estimated days must be greater than 0.");
         return;
       }
-
 }
+addProposal({
+    jobId: job.id,
+    freelancerId: user.id,
+    freelancerName: user.name,
+    coverLetter: coverLetter.trim(),
+    proposedBudget,
+    estimatedDays,
+  });
+
+  navigate(`/jobs/${job.id}`);
+};
+
