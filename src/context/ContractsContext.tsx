@@ -17,6 +17,11 @@ type ContractsContextValue = {
   addContract: (data: CreateContractInput) => Contract;
   getContractsByUser: (userId: string) => Contract[];
   getContractById: (id: string) => Contract | undefined;
+
+  updateContract: (
+    contractId: string,
+    patch: Partial<Pick<Contract, "status" | "paymentStatus" | "endDate" | "updatedAt">>
+  ) => void;
 };
 
 const ContractsContext = createContext<ContractsContextValue | undefined>(undefined);

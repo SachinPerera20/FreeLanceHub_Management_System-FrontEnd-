@@ -33,6 +33,7 @@ export default function App() {
         <Route path="jobs" element={<JobListPage />} />
         <Route path="jobs/create" element={<ProtectedRoute requiredRole="client"> <CreateJobPage /></ProtectedRoute> } />
         <Route path="contracts" element= {<ProtectedRoute> <ContractListPage /> </ProtectedRoute>}/>
+        <Route path="contracts/:contractId" element={<ProtectedRoute><ContractDetailsPage /></ProtectedRoute>} />
         <Route path="/jobs/:jobId" element={<JobDetailsPage />} />
         <Route path="/jobs/applied" element={<AppliedJobsPage />} />
         <Route path="/jobs/:jobId/propose" element={<SubmitProposalPage />} />
