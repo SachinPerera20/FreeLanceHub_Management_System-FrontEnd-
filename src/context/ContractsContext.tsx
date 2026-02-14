@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import type { Contract, CreateContractData, ContractStatus, PaymentStatus } from "../types/contract.types";
 
 const STORAGE_KEY = "freelancehub_contracts";
@@ -105,15 +105,12 @@ export function ContractsProvider({ children }: { children: React.ReactNode }) {
     return contracts.find((c) => c.id === id);
   };
 
-  const value = useMemo<ContractsContextValue>(
-    () => ({
-      contracts,
-      addContract,
-      getContractsByUser,
-      getContractById,
-    }),
-    [contracts]
-  );
+  const value: ContractsContextValue = {
+    contracts,
+    addContract,
+    getContractsByUser,
+    getContractById,
+  };
 
   return <ContractsContext.Provider value={value}>{children}</ContractsContext.Provider>;
 }

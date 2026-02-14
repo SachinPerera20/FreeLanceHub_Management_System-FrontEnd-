@@ -7,6 +7,8 @@ import { AuthProvider } from './context/AuthProvider';
 import { JobsProvider } from './context/JobsContext';
 import { AppliedJobsProvider } from "./context/AppliedJobsContext";
 import { ProposalsProvider } from "./context/ProposalsContext";
+import { ContractsProvider } from "./context/ContractsContext";
+
 
 
 const el = document.getElementById('root');
@@ -22,7 +24,9 @@ createRoot(el).render(
       <JobsProvider>
       <AppliedJobsProvider>
         <ProposalsProvider>
+        <ContractsProvider>
           <App />
+        </ContractsProvider>
         </ProposalsProvider>
       </AppliedJobsProvider>
      </JobsProvider>
