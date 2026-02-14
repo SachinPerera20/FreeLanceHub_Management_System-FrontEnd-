@@ -12,9 +12,9 @@ export default function JobProposalsPage() {
     const navigate = useNavigate();
   
     const { user } = useAuth();
-    const { jobs } = useJobs();
+    const { jobs, updateJobStatus } = useJobs();
     const { getProposalsByJobId, updateProposalStatus } = useProposals();
-  
+    const { addContract } = useContracts();
     const job = useMemo(() => jobs.find((j) => j.id === jobId), [jobs, jobId]);
   
     const proposals = useMemo(() => {
@@ -47,6 +47,33 @@ if (!isOwner) {
     </div>
   );
 }
+
+const acceptProposal = (proposalId: string) => {
+    const selected = proposals.find((p) => p.id === proposalId);
+    if (!selected) return;
+  
+    // 1) update proposal statuses (accepted + auto-reject others)
+    updateProposalStatus(proposalId, "accepted");
+  
+    // 2) create contract
+    addContract({
+      jobId: job.id,
+      proposalId: selected.id,
+      clientId: user!.id,
+      freelancerId: selected.freelancerId,
+      clientName: user!.name,
+      freelancerName: selected.freelancerName,
+  
+      title: job.title,
+      description: job.description,
+      totalAmount: selected.proposedBudget,
+      startDate: new Date().toISOString(),
+    });
+  
+    // 3) update job status
+    updateJobStatus(job.id, "in_progress");
+  };
+  
 
 
     if (!user) {
@@ -117,7 +144,7 @@ if (!isOwner) {
                   <div className="flex flex-col sm:flex-row gap-2 pt-2">
      <button
     type="button"
-    onClick={() => updateProposalStatus(p.id, "accepted")}
+    onClick={() => acceptProposal(p.id)}
     disabled={p.status === "accepted"}
     className={`px-4 py-2 rounded-lg font-semibold text-sm transition
       ${p.status === "accepted"
