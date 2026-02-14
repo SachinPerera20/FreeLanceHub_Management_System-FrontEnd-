@@ -28,3 +28,7 @@ const ContractsContext = createContext<ContractsContextValue | undefined>(
   function saveContracts(contracts: Contract[]) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(contracts));
   }
+
+  function generateContractId() {
+    return `ctr_${Math.random().toString(16).slice(2, 8)}_${Date.now()}`;
+  }
