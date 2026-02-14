@@ -13,7 +13,14 @@ export default function JobDetailsPage() {
 
       return (
         <div className="max-w-4xl mx-auto p-6">
+             
              <h1 className="text-3xl font-bold mb-4"> {job.title} </h1>
+
+             <p className="text-gray-600 mb-2"> Budget: ${job.budget} </p>
+
+             
         </div>
+
+          
       );
 }
