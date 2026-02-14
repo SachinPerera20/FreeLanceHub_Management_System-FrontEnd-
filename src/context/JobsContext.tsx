@@ -20,6 +20,18 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
     },
     [jobs]
   );
+  const updateJobStatus: JobsContextValue["updateJobStatus"] = (jobId, status) => {
+    setJobs((prev) => {
+      const updated = prev.map((j) =>
+        j.id === jobId ? { ...j, status } : j
+      );
+  
+      // If you already save jobs to localStorage in this file, call that helper here too.
+      // Example: saveJobs(updated);
+  
+      return updated;
+    });
+  };
 
   // Memoize the context value to prevent unnecessary re-renders
   const value = useMemo<JobsContextValue>(
@@ -27,6 +39,7 @@ export function JobsProvider({ children }: { children: React.ReactNode }) {
       jobs,
       addJob,
       getJobById,
+      updateJobStatus,
     }),
     [jobs, addJob, getJobById]
   );

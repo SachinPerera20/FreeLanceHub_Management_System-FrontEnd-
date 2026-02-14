@@ -1,5 +1,7 @@
 import { createContext } from 'react';
 import type { MockJob } from '../mocks/jobs.mock';
+import type { JobStatus } from '../types/job.types';
+
 
 // Context value type defining what the JobsContext provides
 export type JobsContextValue = {
