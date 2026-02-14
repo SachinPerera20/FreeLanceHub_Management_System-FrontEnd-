@@ -21,7 +21,9 @@ createRoot(el).render(
       <AuthProvider>
       <JobsProvider>
       <AppliedJobsProvider>
-      <App />
+        <ProposalsProvider>
+          <App />
+        </ProposalsProvider>
       </AppliedJobsProvider>
      </JobsProvider>
       </AuthProvider>
