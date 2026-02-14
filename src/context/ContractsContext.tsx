@@ -61,3 +61,12 @@ const ContractsContext = createContext<ContractsContextValue | undefined>(
           (c) => c.clientId === userId || c.freelancerId === userId
         );
       };
+
+      const value = useMemo<ContractsContextValue>(
+        () => ({
+          contracts,
+          addContract,
+          getContractsByUser,
+        }),
+        [contracts]
+      );
