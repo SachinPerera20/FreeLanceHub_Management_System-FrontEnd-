@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useJobs } from '../../hooks/useJobs';
 import JobCard from '../../components/jobs/JobCard';
+import { Link } from "react-router-dom";
+
 
 export default function JobListPage() {
   const [search, setSearch] = useState('');
