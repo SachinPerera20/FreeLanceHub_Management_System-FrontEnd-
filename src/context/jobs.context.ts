@@ -6,6 +6,11 @@ export type JobsContextValue = {
   jobs: MockJob[];
   addJob: (job: MockJob) => void;
   getJobById: (id: string) => MockJob | undefined;
+
+  updateJobStatus: (
+    jobId: string,
+    status: MockJob["status"]
+  ) => void;
 };
 
 // Create the context with undefined as default (will be provided by JobsProvider)
