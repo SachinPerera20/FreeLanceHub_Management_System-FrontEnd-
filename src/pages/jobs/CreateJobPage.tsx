@@ -35,7 +35,7 @@ export default function CreateJobPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-8">
-     
+      <div className="bg-white rounded-2xl shadow-lg p-8 space-y-6">
       <h1 className="text-2xl font-semibold mb-6">Create New Job</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,6 +73,7 @@ export default function CreateJobPage() {
           Post Job
         </button>
       </form>
+      </div>
     </div>
   );
 }
