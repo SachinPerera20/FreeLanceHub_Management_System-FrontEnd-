@@ -70,3 +70,16 @@ const ContractsContext = createContext<ContractsContextValue | undefined>(
         }),
         [contracts]
       );
+
+      return (
+        <ContractsContext.Provider value={value}>
+          {children}
+        </ContractsContext.Provider>
+      );
+    }
+    
+    export function useContracts() {
+      const ctx = useContext(ContractsContext);
+      if (!ctx) throw new Error("useContracts must be used inside ContractsProvider");
+      return ctx;
+    }
