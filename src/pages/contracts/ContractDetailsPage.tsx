@@ -14,4 +14,11 @@ export default function ContractDetailsPage() {
       if (!contractId) {
         return <div className="p-6">Invalid contract</div>;
       }
+
+      const contract = getContractById(contractId);
+
+  if (!contract) {
+    return <div className="p-6">Contract not found</div>;
+  }
+
 }  
