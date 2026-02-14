@@ -39,3 +39,15 @@ type AppliedJobsContextType = {
         [appliedJobIds]
       );
     
+      return (
+        <AppliedJobsContext.Provider value={value}>
+          {children}
+        </AppliedJobsContext.Provider>
+      );
+    }
+    
+    export function useAppliedJobs() {
+      const ctx = useContext(AppliedJobsContext);
+      if (!ctx) throw new Error("useAppliedJobs must be used inside AppliedJobsProvider");
+      return ctx;
+    }
