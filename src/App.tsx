@@ -14,6 +14,7 @@ import AppliedJobsPage from "./pages/jobs/AppliedJobsPage";
 import SubmitProposalPage from "./pages/jobs/SubmitProposalPage";
 import JobProposalsPage from "./pages/jobs/JobProposalsPage";
 import ContractDetailsPage from "./pages/contracts/ContractDetailsPage";
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 
 
 
@@ -38,6 +39,14 @@ export default function App() {
         <Route path="/jobs/applied" element={<AppliedJobsPage />} />
         <Route path="/jobs/:jobId/propose" element={<SubmitProposalPage />} />
         <Route path="jobs/:jobId/proposals" element={<JobProposalsPage />} />
+        <Route
+  path="/admin"
+  element={
+    <ProtectedRoute requiredRole="admin">
+      <AdminDashboardPage />
+    </ProtectedRoute>
+  }
+/>
 
 
       </Route>

@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 function navItemClass({ isActive }: { isActive: boolean }) {
@@ -67,6 +67,15 @@ export default function Header() {
               <NavLink to="/contracts" className={navItemClass}>
                 Contracts
               </NavLink>
+
+              {user?.role === "admin" && (
+                <Link
+                  to="/admin"
+                  className="px-4 py-2 rounded-lg font-semibold text-white hover:bg-white hover:text-black transition-all duration-300"
+                >
+                  Admin
+                </Link>
+              )}
 
               <NavLink to="/profile" className={navItemClass}>
                 Profile

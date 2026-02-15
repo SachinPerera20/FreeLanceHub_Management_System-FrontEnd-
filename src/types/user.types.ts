@@ -1,7 +1,7 @@
 
  //User role types in the freelance platform
  
-export type UserRole = 'client' | 'freelancer';
+export type UserRole = 'client' | 'freelancer' | 'admin';
 
 
   //User profile information

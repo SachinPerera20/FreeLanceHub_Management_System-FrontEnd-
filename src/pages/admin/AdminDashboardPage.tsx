@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";
-import { useProposals } from "../../context/ProposalsContext";
+import { useProposals } from "../../hooks/useProposals";
 import { useContracts } from "../../context/ContractsContext";
 
 export default function AdminDashboardPage() {
@@ -12,21 +12,22 @@ export default function AdminDashboardPage() {
   // infer the job item type from the hook (NO any, NO wrong Job import)
   type JobItem = (typeof jobs)[number];
 
-  const getJobStatus = (job: JobItem) => {
+  // Memoize helper functions to prevent unnecessary re-renders
+  const getJobStatus = useCallback((job: JobItem) => {
     // support both possible fields (mock vs full type)
     const maybe = job as JobItem & { status?: string };
     return maybe.status;
-  };
+  }, []);
 
-  const getJobCreatedAt = (job: JobItem) => {
+  const getJobCreatedAt = useCallback((job: JobItem) => {
     const maybe = job as JobItem & { createdAt?: string; updatedAt?: string };
     return maybe.createdAt ?? maybe.updatedAt ?? "";
-  };
+  }, []);
 
-  const getClientLabel = (job: JobItem) => {
+  const getClientLabel = useCallback((job: JobItem) => {
     const maybe = job as JobItem & { clientName?: string; createdBy?: string; clientId?: string };
     return maybe.clientName ?? maybe.createdBy ?? maybe.clientId ?? "—";
-  };
+  }, []);
 
   const stats = useMemo(() => {
     const allJobs = jobs.length;
@@ -50,7 +51,7 @@ export default function AdminDashboardPage() {
       activeContracts,
       completedContracts,
     };
-  }, [jobs, proposals, contracts]);
+  }, [jobs, proposals, contracts, getJobStatus]);
 
   const latestJobs = useMemo(() => {
     return [...jobs]
@@ -60,7 +61,7 @@ export default function AdminDashboardPage() {
         return bTime - aTime;
       })
       .slice(0, 6);
-  }, [jobs]);
+  }, [jobs, getJobCreatedAt]);
 
   const latestProposals = useMemo(() => {
     return [...proposals]
@@ -192,13 +193,29 @@ export default function AdminDashboardPage() {
 }
 
 function Kpi({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-2xl border border-black/10 bg-white/80 backdrop-blur p-5 shadow-sm">
-      <p className="text-xs text-zinc-600">{label}</p>
-      <p className="text-2xl font-extrabold text-zinc-950 mt-2">{value}</p>
-    </div>
-  );
-}
+    return (
+      <div
+        className="relative overflow-hidden rounded-2xl border border-white/60
+        bg-gradient-to-b from-white/95 to-white/80 backdrop-blur-xl
+        shadow-[0_10px_30px_rgba(0,0,0,0.08)]
+        transition-all duration-300 hover:-translate-y-1
+        hover:shadow-[0_18px_50px_rgba(0,0,0,0.12)]"
+      >
+        {/* subtle glow on hover */}
+        <div
+          className="absolute inset-0 opacity-0 transition-opacity duration-300
+          group-hover:opacity-100
+          bg-gradient-to-r from-indigo-200/40 via-transparent to-cyan-200/40 blur-xl"
+        />
+  
+        <div className="relative p-5">
+          <p className="text-xs text-zinc-600">{label}</p>
+          <p className="text-3xl font-extrabold text-zinc-950 mt-2">{value}</p>
+        </div>
+      </div>
+    );
+  }
+  
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (

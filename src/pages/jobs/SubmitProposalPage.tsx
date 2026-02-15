@@ -1,12 +1,20 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";
 import { useAuth } from "../../hooks/useAuth";
-import { useProposals } from "../../context/ProposalsContext";
+import { useProposals } from "../../hooks/useProposals";
+
+type NavState = {
+  intent?: "apply" | "proposal";
+  forceRole?: "freelancer";
+  from?: string;
+  jobId?: string;
+};
 
 export default function SubmitProposalPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { jobs } = useJobs();
   const { user } = useAuth();
@@ -14,33 +22,56 @@ export default function SubmitProposalPage() {
 
   const job = useMemo(() => jobs.find((j) => j.id === jobId), [jobs, jobId]);
 
-  // ✅ Initialize once (no effect needed)
   const [coverLetter, setCoverLetter] = useState("");
-  const [proposedBudget, setProposedBudget] = useState<number>(() => job?.budget ?? 0);
-  const [estimatedDays, setEstimatedDays] = useState<number>(7);
+  const [proposedBudget, setProposedBudget] = useState(() => job?.budget ?? 0);
+  const [estimatedDays, setEstimatedDays] = useState(7);
   const [error, setError] = useState("");
 
-  // Guards (render safe)
   if (!jobId) return <div className="p-6">Invalid job</div>;
   if (!job) return <div className="p-6">Job not found</div>;
 
-  // If not logged in, show a button to login (no navigate in render)
+  const redirectToFreelancerRegister = () => {
+    const state: NavState = {
+      intent: "proposal",
+      forceRole: "freelancer",
+      from: location.pathname,
+      jobId: job.id,
+    };
+    navigate("/register", { state });
+  };
+
+  // Block clients here too
   if (!user) {
     return (
-      <div className="max-w-3xl mx-auto p-6">
-        <div className="bg-white rounded-xl border p-6 space-y-4">
-          <h1 className="text-2xl font-bold">Submit Proposal</h1>
-          <p className="text-gray-600">
-            You must be logged in to submit a proposal.
-          </p>
-          <button
-            type="button"
-            onClick={() => navigate("/login")}
-            className="px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90"
-          >
-            Go to Login
-          </button>
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <h1 className="text-2xl font-bold">Submit Proposal</h1>
+        <p className="mt-2 text-zinc-700">
+          You must register/login as a <b>freelancer</b> to submit a proposal.
+        </p>
+        <button
+          onClick={redirectToFreelancerRegister}
+          className="mt-5 px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90"
+        >
+          Go to Freelancer Register
+        </button>
+      </div>
+    );
+  }
+
+  if (user.role !== "freelancer") {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-10">
+        <h1 className="text-2xl font-bold">Submit Proposal</h1>
+        <p className="mt-2 text-zinc-700">
+          You are logged in as a <b>client</b>. To submit proposals, login/register
+          as a <b>freelancer</b>.
+        </p>
+        <button
+          onClick={redirectToFreelancerRegister}
+          className="mt-5 px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90"
+        >
+          Switch to Freelancer (Register/Login)
+        </button>
       </div>
     );
   }
@@ -64,8 +95,6 @@ export default function SubmitProposalPage() {
 
     addProposal({
       jobId: job.id,
-      freelancerId: user.id,
-      freelancerName: user.name,
       coverLetter: coverLetter.trim(),
       proposedBudget,
       estimatedDays,
@@ -75,17 +104,15 @@ export default function SubmitProposalPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <div className="bg-white rounded-xl border p-6 space-y-5">
-        <div>
-          <h1 className="text-2xl font-bold">Submit Proposal</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Job: <span className="font-medium text-gray-900">{job.title}</span>
-          </p>
-        </div>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <h1 className="text-3xl font-extrabold">Submit Proposal</h1>
+      <p className="mt-2 text-zinc-600">
+        Job: <b className="text-zinc-900">{job.title}</b>
+      </p>
 
+      <div className="mt-6 rounded-2xl border bg-white/90 p-6">
         {error ? (
-          <div className="rounded-lg bg-red-50 border border-red-100 p-3 text-sm text-red-700">
+          <div className="mb-4 rounded-lg bg-rose-50 px-4 py-3 text-rose-700">
             {error}
           </div>
         ) : null}
@@ -104,7 +131,9 @@ export default function SubmitProposalPage() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Proposed Budget ($)</label>
+              <label className="block text-sm font-medium mb-1">
+                Proposed Budget ($)
+              </label>
               <input
                 type="number"
                 value={proposedBudget}
@@ -115,7 +144,9 @@ export default function SubmitProposalPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Estimated Days</label>
+              <label className="block text-sm font-medium mb-1">
+                Estimated Days
+              </label>
               <input
                 type="number"
                 value={estimatedDays}
@@ -133,11 +164,10 @@ export default function SubmitProposalPage() {
             >
               Submit
             </button>
-
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-5 py-2.5 rounded-lg bg-gray-100 hover:bg-gray-200"
+              className="px-5 py-2.5 rounded-lg bg-zinc-100 hover:bg-zinc-200"
             >
               Cancel
             </button>
