@@ -1,69 +1,92 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-  
-export default function Login() {
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
-    const { login, isLoading, error, clearError } = useAuth();
-    const navigate = useNavigate();
-  
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        clearError();
-
-        try {
-            await login({ email, password });
-            navigate('/profile'); // redirect after successful login
-          }
-
-          catch {
-            // error handled in context
-          }
-
+type NavState = {
+  intent?: "apply" | "proposal";
+  forceRole?: "freelancer";
+  from?: string;
+  jobId?: string;
 };
 
-return (
-    <div className="max-w-md mx-auto mt-20 bg-white p-8 rounded shadow">
-    <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+export default function Login() {
+  const { login, isLoading, error, clearError } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    <form onSubmit={handleSubmit} className="space-y-4">
+  const navState = (location.state ?? {}) as NavState;
+  const redirectTo = navState.from ?? "/profile";
 
-    <input
-          type="email"
-          placeholder="Email"
-          className="w-full border rounded px-3 py-2"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    <input
-          type="password"
-          placeholder="Password"
-          className="w-full border rounded px-3 py-2"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    clearError();
+    try {
+      await login({ email, password });
+      navigate(redirectTo);
+    } catch {
+      // handled in context
+    }
+  };
 
-    {error && (
-          <p className="text-red-500 text-sm">{error}</p>
-        )}
+  return (
+    <div className="max-w-lg mx-auto px-4 py-10">
+      <div className="rounded-2xl border bg-white/90 p-6 shadow-sm">
+        <h1 className="text-3xl font-extrabold">Login</h1>
 
-    <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
-        >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
+        {navState.forceRole === "freelancer" ? (
+          <div className="mt-4 rounded-xl border bg-amber-50 px-4 py-3 text-amber-900">
+            Login with a <b>freelancer</b> account to continue.
+          </div>
+        ) : null}
 
-    </form>
+        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+              required
+            />
+          </div>
 
-    
+          <div>
+            <label className="block text-sm font-medium mb-1">Password</label>
+            <input
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+              required
+            />
+          </div>
+
+          {error ? (
+            <div className="rounded-lg bg-rose-50 px-4 py-3 text-rose-700">
+              {error}
+            </div>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90 disabled:opacity-60"
+          >
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
+
+          <p className="text-sm text-zinc-600 text-center">
+            No account?{" "}
+            <Link to="/register" state={navState} className="underline font-semibold">
+              Register
+            </Link>
+          </p>
+        </form>
+      </div>
     </div>
-);
+  );
 }
