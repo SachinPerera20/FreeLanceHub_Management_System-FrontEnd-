@@ -4,21 +4,34 @@ import { useJobs } from "../../hooks/useJobs";
 import { useProposals } from "../../context/ProposalsContext";
 import { useContracts } from "../../context/ContractsContext";
 
-function getClientLabel(job: { clientName?: string; createdBy?: string; clientId?: string }) {
-    return job.clientName ?? job.createdBy ?? job.clientId ?? "—";
-  }
-  
-
 export default function AdminDashboardPage() {
-  const { jobs } = useJobs();
+  const { jobs } = useJobs(); // <- this is MockJob[] in your project
   const { proposals } = useProposals();
   const { contracts } = useContracts();
 
+  // infer the job item type from the hook (NO any, NO wrong Job import)
+  type JobItem = (typeof jobs)[number];
+
+  const getJobStatus = (job: JobItem) => {
+    // support both possible fields (mock vs full type)
+    const maybe = job as JobItem & { status?: string };
+    return maybe.status;
+  };
+
+  const getJobCreatedAt = (job: JobItem) => {
+    const maybe = job as JobItem & { createdAt?: string; updatedAt?: string };
+    return maybe.createdAt ?? maybe.updatedAt ?? "";
+  };
+
+  const getClientLabel = (job: JobItem) => {
+    const maybe = job as JobItem & { clientName?: string; createdBy?: string; clientId?: string };
+    return maybe.clientName ?? maybe.createdBy ?? maybe.clientId ?? "—";
+  };
+
   const stats = useMemo(() => {
     const allJobs = jobs.length;
-
-    const openJobs = jobs.filter((j) => (j as any).status === "open").length; // if status exists
-    const inProgressJobs = jobs.filter((j) => (j as any).status === "in_progress").length;
+    const openJobs = jobs.filter((j) => getJobStatus(j) === "open").length;
+    const inProgressJobs = jobs.filter((j) => getJobStatus(j) === "in_progress").length;
 
     const totalProposals = proposals.length;
     const pendingProposals = proposals.filter((p) => p.status === "pending").length;
@@ -41,21 +54,22 @@ export default function AdminDashboardPage() {
 
   const latestJobs = useMemo(() => {
     return [...jobs]
-      .slice()
-      .reverse()
+      .sort((a, b) => {
+        const aTime = Date.parse(getJobCreatedAt(a)) || 0;
+        const bTime = Date.parse(getJobCreatedAt(b)) || 0;
+        return bTime - aTime;
+      })
       .slice(0, 6);
   }, [jobs]);
 
   const latestProposals = useMemo(() => {
     return [...proposals]
-      .slice()
       .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
       .slice(0, 6);
   }, [proposals]);
 
   const latestContracts = useMemo(() => {
     return [...contracts]
-      .slice()
       .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
       .slice(0, 6);
   }, [contracts]);
@@ -88,7 +102,7 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi label="Total Jobs" value={stats.allJobs} />
         <Kpi label="Open Jobs" value={stats.openJobs} />
@@ -96,7 +110,7 @@ export default function AdminDashboardPage() {
         <Kpi label="Active Contracts" value={stats.activeContracts} />
       </div>
 
-      {/* Tables */}
+      {/* PANELS */}
       <div className="grid gap-6 lg:grid-cols-3">
         <Panel title="Latest Jobs">
           {latestJobs.length === 0 ? (
@@ -108,7 +122,7 @@ export default function AdminDashboardPage() {
                   <div className="min-w-0">
                     <p className="font-semibold text-zinc-950 truncate">{j.title}</p>
                     <p className="text-xs text-zinc-600 truncate">
-                      Client: {(j as any).clientName ?? "—"} • Budget: ${j.budget}
+                      Client: {getClientLabel(j)} • Budget: ${j.budget}
                     </p>
                   </div>
                   <Link
@@ -179,7 +193,7 @@ export default function AdminDashboardPage() {
 
 function Kpi({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-2xl border border-black/10 bg-white/70 backdrop-blur p-5 shadow-sm">
+    <div className="rounded-2xl border border-black/10 bg-white/80 backdrop-blur p-5 shadow-sm">
       <p className="text-xs text-zinc-600">{label}</p>
       <p className="text-2xl font-extrabold text-zinc-950 mt-2">{value}</p>
     </div>
@@ -188,10 +202,8 @@ function Kpi({ label, value }: { label: string; value: number }) {
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-black/10 bg-white/70 backdrop-blur p-5 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-bold text-zinc-950">{title}</h2>
-      </div>
+    <div className="rounded-2xl border border-black/10 bg-white/80 backdrop-blur p-5 shadow-sm">
+      <h2 className="font-bold text-zinc-950 mb-4">{title}</h2>
       {children}
     </div>
   );
