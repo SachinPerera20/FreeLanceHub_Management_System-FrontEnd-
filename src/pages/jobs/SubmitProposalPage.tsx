@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";
 import { useAuth } from "../../hooks/useAuth";
-import { useProposals } from "../../hooks/useProposals";
+import { useProposals } from "../../context/ProposalsContext";
 
 type NavState = {
   intent?: "apply" | "proposal";
@@ -27,50 +27,32 @@ export default function SubmitProposalPage() {
   const [estimatedDays, setEstimatedDays] = useState(7);
   const [error, setError] = useState("");
 
-  if (!jobId) return <div className="p-6">Invalid job</div>;
-  if (!job) return <div className="p-6">Job not found</div>;
-
   const redirectToFreelancerRegister = () => {
     const state: NavState = {
       intent: "proposal",
       forceRole: "freelancer",
       from: location.pathname,
-      jobId: job.id,
+      jobId: jobId,
     };
     navigate("/register", { state });
   };
 
-  // Block clients here too
-  if (!user) {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-10">
-        <h1 className="text-2xl font-bold">Submit Proposal</h1>
-        <p className="mt-2 text-zinc-700">
-          You must register/login as a <b>freelancer</b> to submit a proposal.
-        </p>
-        <button
-          onClick={redirectToFreelancerRegister}
-          className="mt-5 px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90"
-        >
-          Go to Freelancer Register
-        </button>
-      </div>
-    );
-  }
+  if (!jobId) return <div className="p-6">Invalid job</div>;
+  if (!job) return <div className="p-6">Job not found</div>;
 
-  if (user.role !== "freelancer") {
+  // ✅ Block non-freelancer users without navigating during render
+  if (!user || user.role !== "freelancer") {
     return (
       <div className="max-w-3xl mx-auto px-4 py-10">
         <h1 className="text-2xl font-bold">Submit Proposal</h1>
         <p className="mt-2 text-zinc-700">
-          You are logged in as a <b>client</b>. To submit proposals, login/register
-          as a <b>freelancer</b>.
+          You must login/register as a <b>freelancer</b> to submit proposals.
         </p>
         <button
           onClick={redirectToFreelancerRegister}
           className="mt-5 px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90"
         >
-          Switch to Freelancer (Register/Login)
+          Go to Freelancer Register/Login
         </button>
       </div>
     );
@@ -93,6 +75,7 @@ export default function SubmitProposalPage() {
       return;
     }
 
+    // ✅ Do NOT send freelancerId/name — context will inject from auth
     addProposal({
       jobId: job.id,
       coverLetter: coverLetter.trim(),
@@ -131,9 +114,7 @@ export default function SubmitProposalPage() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Proposed Budget ($)
-              </label>
+              <label className="block text-sm font-medium mb-1">Proposed Budget ($)</label>
               <input
                 type="number"
                 value={proposedBudget}
@@ -144,9 +125,7 @@ export default function SubmitProposalPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
-                Estimated Days
-              </label>
+              <label className="block text-sm font-medium mb-1">Estimated Days</label>
               <input
                 type="number"
                 value={estimatedDays}
@@ -158,10 +137,7 @@ export default function SubmitProposalPage() {
           </div>
 
           <div className="flex gap-2 pt-2">
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90"
-            >
+            <button type="submit" className="px-5 py-2.5 rounded-lg bg-black text-white hover:opacity-90">
               Submit
             </button>
             <button

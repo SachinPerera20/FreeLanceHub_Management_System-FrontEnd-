@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useJobs } from "../../hooks/useJobs";
 import { useAppliedJobs } from "../../hooks/useAppliedJobs";
@@ -20,13 +19,13 @@ export default function JobDetailsPage() {
   const { applyToJob, isApplied } = useAppliedJobs();
   const { user } = useAuth();
 
-  const job = useMemo(() => jobs.find((j) => j.id === jobId), [jobs, jobId]);
+  const job = jobs.find((j) => j.id === jobId);
 
   if (!job) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-10">
         <h1 className="text-2xl font-bold">Job not found</h1>
-        <Link to="/jobs" className="text-blue-600 underline">
+        <Link to="/jobs" className="underline text-blue-600">
           Back to Jobs
         </Link>
       </div>
@@ -36,30 +35,32 @@ export default function JobDetailsPage() {
   const isOwner = !!user && user.id === job.createdBy;
   const applied = isApplied(job.id);
 
-  const redirectToFreelancerAuth = (intent: NavState["intent"]) => {
+  const redirectToFreelancerRegister = (intent: NavState["intent"]) => {
     const state: NavState = {
       intent,
       forceRole: "freelancer",
       from: location.pathname,
       jobId: job.id,
     };
-    // Requirement: redirect to register to force freelancer register/login
     navigate("/register", { state });
   };
 
-  const onApplyClick = () => {
-    // keep button visible, but block client/non-auth
-    if (!user) return redirectToFreelancerAuth("apply");
-    if (user.role !== "freelancer") return redirectToFreelancerAuth("apply");
+  const handleApplyClick = () => {
+    // ✅ Apply button stays visible, but client/non-auth gets redirected
+    if (!user || user.role !== "freelancer") {
+      redirectToFreelancerRegister("apply");
+      return;
+    }
     if (applied) return;
-
     applyToJob(job.id);
   };
 
-  const onProposalClick = () => {
-    if (!user) return redirectToFreelancerAuth("proposal");
-    if (user.role !== "freelancer") return redirectToFreelancerAuth("proposal");
-
+  const handleProposalClick = () => {
+    // ✅ Clients cannot submit proposals
+    if (!user || user.role !== "freelancer") {
+      redirectToFreelancerRegister("proposal");
+      return;
+    }
     navigate(`/jobs/${job.id}/submit-proposal`);
   };
 
@@ -72,17 +73,11 @@ export default function JobDetailsPage() {
           <span className="rounded-full bg-zinc-100 px-3 py-1">
             Budget: <b>${job.budget}</b>
           </span>
-          <span className="rounded-full bg-zinc-100 px-3 py-1">
-            Client: <b>{job.clientName}</b>
-          </span>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
           {job.skills.map((skill) => (
-            <span
-              key={skill}
-              className="rounded-full border px-3 py-1 text-sm bg-white"
-            >
+            <span key={skill} className="rounded-full border bg-white px-3 py-1 text-sm">
               {skill}
             </span>
           ))}
@@ -90,12 +85,11 @@ export default function JobDetailsPage() {
 
         <p className="mt-5 text-zinc-700 leading-relaxed">{job.description}</p>
 
-        {/* ACTIONS */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          {/* Apply button is visible even for clients (requirement), but blocked on click */}
+          {/* ✅ Apply visible (even for clients), but controlled on click */}
           {!isOwner ? (
             <button
-              onClick={onApplyClick}
+              onClick={handleApplyClick}
               className={[
                 "w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition",
                 applied
@@ -107,17 +101,16 @@ export default function JobDetailsPage() {
             </button>
           ) : null}
 
-          {/* Submit proposal: also blocked for clients */}
+          {/* ✅ Submit Proposal: visible but also controlled */}
           {!isOwner ? (
             <button
-              onClick={onProposalClick}
+              onClick={handleProposalClick}
               className="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold transition bg-zinc-100 hover:bg-zinc-200"
             >
               Submit Proposal
             </button>
           ) : null}
 
-          {/* Owner can view proposals */}
           {isOwner ? (
             <Link
               to={`/jobs/${job.id}/proposals`}
@@ -128,11 +121,9 @@ export default function JobDetailsPage() {
           ) : null}
         </div>
 
-        {/* Small helper note for clients */}
         {!isOwner && user?.role === "client" ? (
           <p className="mt-3 text-sm text-zinc-600">
-            To apply or submit a proposal, you must be logged in as a{" "}
-            <b>freelancer</b>.
+            To apply or submit proposals, you must login/register as a <b>freelancer</b>.
           </p>
         ) : null}
       </div>
