@@ -12,9 +12,17 @@
     min-height: 100vh;
 
     /* Make it more obvious for now (presentation-ready) */
-    background: 
-      radial-gradient(1200px 650px at 15% -10%, rgba(99, 102, 241, 0.18), transparent 60%),
-      radial-gradient(1000px 600px at 90% 0%, rgba(16, 185, 129, 0.14), transparent 55%),
+    background:
+      radial-gradient(
+        1200px 650px at 15% -10%,
+        rgba(99, 102, 241, 0.18),
+        transparent 60%
+      ),
+      radial-gradient(
+        1000px 600px at 90% 0%,
+        rgba(16, 185, 129, 0.14),
+        transparent 55%
+      ),
       linear-gradient(to bottom, #fafafa, #f3f4f6);
   }
 
@@ -33,5 +41,15 @@
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-}
 
+  /* Header wrapper for Apple-style wide spacing */
+  .header-shell {
+    @apply mx-auto h-16 flex items-center justify-between px-6 sm:px-8;
+    max-width: 1200px;
+  }
+
+  /* Wider on homepage top */
+  .header-shell--wide {
+    max-width: 1400px;
+  }
+}

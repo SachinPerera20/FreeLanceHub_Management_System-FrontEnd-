@@ -1,96 +1,116 @@
-import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+import { useEffect, useMemo, useState } from "react";
 
-function cx(...classes: Array<string | false | undefined | null>) {
-  return classes.filter(Boolean).join(" ");
+function navItemClass(isActive: boolean, textColor: string) {
+  const base =
+    "inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold " +
+    "transition-all duration-200 ease-out transform-gpu will-change-transform select-none";
+
+  const hover =
+    "hover:-translate-y-0.5 hover:bg-white hover:text-black hover:shadow-lg hover:shadow-black/25";
+
+  const idle = `${textColor} bg-transparent`;
+
+  const active = isActive
+    ? "bg-black text-sky-300 shadow-lg shadow-black/30"
+    : "";
+
+  return `${base} ${isActive ? active : idle} ${hover}`;
 }
 
 export default function Header() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const isHome = location.pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
 
-  // Home-only: track whether hero is visible
-  const [heroVisibleState, setHeroVisibleState] = useState(true);
+  const isHome = location.pathname === "/";
 
-  // ✅ Derived value: on non-home pages, hero is always treated as NOT visible
-  const heroVisible = isHome ? heroVisibleState : false;
-
-  const rafRef = useRef<number | null>(null);
-
-  // Scroll shadow (all pages)
+  // Scroll state
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY || 0;
-      setScrolled(y > 8);
-    };
-
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Home hero visibility (ONLY when isHome)
+  // Hero visibility (requires id="home-hero" on the hero <section>)
   useEffect(() => {
-    if (!isHome) return;
+    if (!isHome) {
+      setHeroVisible(false);
+      return;
+    }
 
-    const onScroll = () => {
-      // Throttle using rAF
-      if (rafRef.current) return;
+    const el = document.getElementById("home-hero");
+    if (!el) {
+      setHeroVisible(false);
+      return;
+    }
 
-      rafRef.current = window.requestAnimationFrame(() => {
-        rafRef.current = null;
-
-        const hero = document.getElementById("home-hero");
-        if (!hero) {
-          setHeroVisibleState(true);
-          return;
-        }
-
-        const rect = hero.getBoundingClientRect();
-        const viewportH = window.innerHeight || 0;
-
-        // Visible if at least part of hero is in viewport
-        const isVisible = rect.bottom > 80 && rect.top < viewportH * 0.6;
-        setHeroVisibleState(isVisible);
-      });
-    };
-
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafRef.current) {
-        window.cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
-    };
-  }, [isHome]);
-
-  const navClass = ({ isActive }: { isActive: boolean }) =>
-    cx(
-      "px-3 py-2 rounded-lg text-sm font-medium transition",
-      isActive ? "bg-white/10 text-white" : "text-white/70 hover:text-white hover:bg-white/5"
+    const obs = new IntersectionObserver(
+      ([entry]) => setHeroVisible(entry.isIntersecting),
+      { threshold: 0.15 },
     );
 
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [isHome]);
+
+  // We treat "home top" as: on homepage, not scrolled, hero is visible
+  const homeTop = isHome && !scrolled && heroVisible;
+
+  // Text color:
+  // - If hero is behind header => white
+  // - Otherwise => black (this fixes your “top is still white, I need black” issue)
+  const textColor = homeTop ? "text-white" : "text-black";
+
+  // Header background:
+  // - If hero behind => transparent (Cosmos style)
+  // - Otherwise => light glass so black text is visible
+  const headerClass = useMemo(() => {
+    if (homeTop) {
+      return "fixed top-0 left-0 right-0 z-50 bg-transparent";
+    }
+    return (
+      "fixed top-0 left-0 right-0 z-50 " +
+      "bg-white/75 backdrop-blur-xl border-b border-black/10 " +
+      "shadow-[0_10px_30px_rgba(0,0,0,0.12)]"
+    );
+  }, [homeTop]);
+
+  // “Spread to the sides” animation (home only)
+  // At top: brand + nav move towards center a bit
+  // After scroll: they slide back to normal edges
+  const brandMotion = useMemo(() => {
+    if (isHome && !scrolled) return "translate-x-24";
+    return "translate-x-0";
+  }, [isHome, scrolled]);
+
+  const navMotion = useMemo(() => {
+    if (isHome && !scrolled) return "-translate-x-24";
+    return "translate-x-0";
+  }, [isHome, scrolled]);
+
   return (
-    <header
-      className={cx(
-        "sticky top-0 z-50 w-full",
-        "border-b border-white/10",
-        "backdrop-blur-xl",
-        scrolled ? "bg-zinc-950/70" : "bg-zinc-950/40"
-      )}
-    >
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Left */}
-          <div className="flex items-center gap-3">
-            <Link to="/" className="font-extrabold text-white tracking-tight">
+    <>
+      {/* Spacer so content doesn’t go under fixed header */}
+      <div className="h-16" />
+
+      <header className={headerClass}>
+        <div className="container flex h-16 items-center justify-between">
+          {/* Brand */}
+          <NavLink
+            to="/"
+            className={`flex items-center gap-2 transition-transform duration-500 ${brandMotion}`}
+          >
+            <span className="h-9 w-9 rounded-xl bg-black/10 border border-black/10 grid place-items-center">
+              <span className={`text-sm font-extrabold ${textColor}`}>FH</span>
+            </span>
+            <span
+              className={`text-lg font-bold tracking-tight transition-colors duration-300 ${textColor}`}
+            >
               FreelanceHub
             </Link>
 
@@ -109,9 +129,15 @@ export default function Header() {
             ) : null}
           </div>
 
-          {/* Center Nav */}
-          <nav className="hidden md:flex items-center gap-2">
-            <NavLink to="/" className={navClass} end>
+          {/* Nav */}
+          <nav
+            className={`flex items-center gap-2 transition-transform duration-500 ${navMotion}`}
+          >
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) => navItemClass(isActive, textColor)}
+            >
               Home
             </NavLink>
 
@@ -144,34 +170,112 @@ export default function Header() {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white/80 hover:text-white hover:bg-white/5 transition"
+                  className={({ isActive }) =>
+                    navItemClass(isActive, textColor)
+                  }
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-zinc-950 hover:opacity-90 transition"
+                  className={({ isActive }) =>
+                    navItemClass(isActive, textColor)
+                  }
                 >
                   Register
                 </Link>
               </>
             ) : (
               <>
-                <span className="hidden sm:inline text-sm text-white/70">
-                  {user.name} • <span className="text-white/50">{user.role}</span>
-                </span>
+                <NavLink
+                  to="/jobs"
+                  end
+                  className={({ isActive }) =>
+                    navItemClass(isActive, textColor)
+                  }
+                >
+                  Jobs
+                </NavLink>
 
+                {user.role === "client" && (
+                  <NavLink
+                    to="/jobs/create"
+                    className={({ isActive }) =>
+                      navItemClass(isActive, textColor)
+                    }
+                  >
+                    Create Job
+                  </NavLink>
+                )}
+
+                <NavLink
+                  to="/contracts"
+                  className={({ isActive }) =>
+                    navItemClass(isActive, textColor)
+                  }
+                >
+                  Contracts
+                </NavLink>
+
+                {user.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${textColor} hover:bg-black hover:text-white`}
+                  >
+                    Admin
+                  </Link>
+                )}
+
+                <NavLink
+                  to="/profile"
+                  className={({ isActive }) =>
+                    navItemClass(isActive, textColor)
+                  }
+                >
+                  Profile
+                </NavLink>
+
+                {/* user chip */}
+                <div className="hidden sm:flex items-center gap-2 ml-2 pl-2 border-l border-black/10">
+                  <div className="h-9 w-9 rounded-xl bg-black/10 border border-black/10 grid place-items-center">
+                    <span className={`text-xs font-bold ${textColor}`}>
+                      {user.name?.slice(0, 1).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="leading-tight">
+                    <p className={`text-sm font-semibold ${textColor}`}>
+                      {user.name}
+                    </p>
+                    <p className="text-xs text-black/50">{user.role}</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="ml-2 inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold
+                      bg-black/10 border border-black/10 text-black
+                      transition-all duration-200 ease-out transform-gpu
+                      hover:-translate-y-0.5 hover:bg-black hover:text-white hover:shadow-lg hover:shadow-black/25"
+                  >
+                    Logout
+                  </button>
+                </div>
+
+                {/* mobile logout */}
                 <button
                   onClick={logout}
-                  className="px-4 py-2 rounded-lg text-sm font-semibold text-white/80 hover:text-white hover:bg-white/5 transition"
+                  className="sm:hidden inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold
+                    bg-black/10 border border-black/10 text-black
+                    transition-all duration-200 ease-out transform-gpu
+                    hover:-translate-y-0.5 hover:bg-black hover:text-white hover:shadow-lg hover:shadow-black/25"
                 >
                   Logout
                 </button>
               </>
             )}
-          </div>
+          </nav>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

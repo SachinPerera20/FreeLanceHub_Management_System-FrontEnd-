@@ -28,7 +28,7 @@ export default function HomePage() {
         {/* Sticky hero */}
         <section
           id="home-hero"
-          className="sticky top-0 h-screen overflow-hidden"
+          className="sticky top-0 h-screen overflow-hidden w-full"
         >
           {/* Background (animated) */}
           <div
