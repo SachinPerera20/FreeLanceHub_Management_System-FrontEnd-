@@ -6,31 +6,27 @@ function lerp(a: number, b: number, t: number) {
 }
 
 export default function HomePage() {
-  // 0..1 based on first 1400px of scroll
-  const p = useScrollProgress(1400);
+  // 0..1 based on first 900px of scroll
+  const p = useScrollProgress(900);
 
-  // hero animations derived from scroll
   const heroOpacity = useMemo(
     () => lerp(1, 0, Math.max(0, (p - 0.55) / 0.35)),
     [p],
   );
-  const heroScale = useMemo(() => lerp(1, 0.92, Math.min(1, p * 1.1)), [p]);
-  const bgBlur = useMemo(() => lerp(0, 18, Math.min(1, p * 1.2)), [p]);
-  const bgDim = useMemo(() => lerp(0.25, 0.55, Math.min(1, p * 1.2)), [p]);
-
-  // parallax strength for floating tiles
-  const drift = useMemo(() => lerp(0, 80, p), [p]);
+  const heroScale = useMemo(() => lerp(1, 0.94, Math.min(1, p * 1.1)), [p]);
+  const bgBlur = useMemo(() => lerp(0, 16, Math.min(1, p * 1.2)), [p]);
+  const bgDim = useMemo(() => lerp(0.15, 0.55, Math.min(1, p * 1.2)), [p]);
+  const drift = useMemo(() => lerp(0, 70, p), [p]);
 
   return (
-    <div className="min-h-screen text-white">
-      {/* Top spacer so scroll has room */}
-      <div className="h-[220vh] relative">
+    <div className="text-white">
+      <div className="relative">
         {/* Sticky hero */}
         <section
           id="home-hero"
-          className="sticky top-0 h-screen overflow-hidden w-full"
+          className="sticky top-0 h-screen overflow-hidden"
         >
-          {/* Background (animated) */}
+          {/* Background */}
           <div
             className="absolute inset-0"
             style={{
@@ -42,13 +38,13 @@ export default function HomePage() {
             <div className="absolute -inset-[30%] opacity-60 bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.45),transparent_55%),radial-gradient(circle_at_70%_60%,rgba(34,211,238,0.35),transparent_55%),radial-gradient(circle_at_40%_80%,rgba(244,63,94,0.25),transparent_60%)]" />
           </div>
 
-          {/* Dim overlay (animated) */}
+          {/* Dim overlay */}
           <div
             className="absolute inset-0 bg-black"
             style={{ opacity: bgDim }}
           />
 
-          {/* Floating tiles (parallax) */}
+          {/* Floating tiles */}
           <FloatingTiles drift={drift} />
 
           {/* Center content */}
@@ -57,7 +53,7 @@ export default function HomePage() {
               className="max-w-3xl text-center"
               style={{
                 opacity: heroOpacity,
-                transform: `scale(${heroScale}) translateY(${lerp(0, -18, p)}px)`,
+                transform: `scale(${heroScale}) translateY(${lerp(0, -14, p)}px)`,
                 transition: "transform 30ms linear, opacity 30ms linear",
               }}
             >
@@ -89,10 +85,13 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Next section (reveals after scroll) */}
-        <section className="absolute left-0 right-0 bottom-0 h-screen flex items-center justify-center">
-          <div className="max-w-4xl px-6 text-center">
-            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-black">
+        {/* Spacer so hero can fade out before next content */}
+        <div className="h-[90vh]" />
+
+        {/* Reveal section (NORMAL FLOW) */}
+        <section className="relative bg-white text-black py-24">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
               Taste isn’t born.
               <br />
               It’s built.
@@ -108,29 +107,27 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* background for this section */}
-          <div className="absolute inset-0 -z-10 bg-white" />
           <div className="absolute inset-0 -z-10 opacity-60 bg-[radial-gradient(circle_at_50%_0%,rgba(0,0,0,0.10),transparent_55%)]" />
         </section>
-      </div>
 
-      {/* Normal page content after the fancy hero */}
-      <section className="bg-white text-black py-20">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-6">
-          <FeatureCard
-            title="Post Jobs"
-            desc="Create jobs with budget, skills, and deadlines."
-          />
-          <FeatureCard
-            title="Send Proposals"
-            desc="Apply with cover letters, pricing, and timelines."
-          />
-          <FeatureCard
-            title="Manage Contracts"
-            desc="Accept offers and track milestones and status."
-          />
-        </div>
-      </section>
+        {/* Normal content */}
+        <section className="bg-white text-black py-20">
+          <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-6">
+            <FeatureCard
+              title="Post Jobs"
+              desc="Create jobs with budget, skills, and deadlines."
+            />
+            <FeatureCard
+              title="Send Proposals"
+              desc="Apply with cover letters, pricing, and timelines."
+            />
+            <FeatureCard
+              title="Manage Contracts"
+              desc="Accept offers and track milestones and status."
+            />
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
@@ -145,14 +142,13 @@ function FeatureCard({ title, desc }: { title: string; desc: string }) {
 }
 
 function FloatingTiles({ drift }: { drift: number }) {
-  // Use “fake images” (divs) for now; later swap with real images
   const tiles = [
-    { top: "14%", left: "10%", w: 180, h: 220, r: -8 },
-    { top: "18%", left: "72%", w: 220, h: 160, r: 10 },
-    { top: "62%", left: "14%", w: 220, h: 170, r: 7 },
-    { top: "68%", left: "70%", w: 190, h: 240, r: -6 },
-    { top: "42%", left: "82%", w: 140, h: 140, r: 12 },
-    { top: "40%", left: "6%", w: 140, h: 140, r: -12 },
+    { top: "14%", left: "6%", w: 220, h: 260, r: -8 },
+    { top: "18%", left: "78%", w: 260, h: 180, r: 10 },
+    { top: "64%", left: "10%", w: 260, h: 190, r: 7 },
+    { top: "70%", left: "74%", w: 220, h: 280, r: -6 },
+    { top: "40%", left: "88%", w: 160, h: 160, r: 12 },
+    { top: "42%", left: "2%", w: 160, h: 160, r: -12 },
   ];
 
   return (
