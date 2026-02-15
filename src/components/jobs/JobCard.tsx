@@ -33,11 +33,19 @@ export default function JobCard({ job }: Props) {
                 hover:border-zinc-300 
                 group"
           >
-        {/* Shine */}
-        <div className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full bg-zinc-200/40 blur-3xl opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-        <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-200 group-hover:opacity-100
-          bg-[linear-gradient(110deg,transparent,rgba(0,0,0,0.03),transparent)]"
-        />
+
+            {/* soft aura glow on hover */}
+<div className="pointer-events-none absolute -inset-1 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 
+  bg-gradient-to-r from-indigo-200/40 via-transparent to-sky-200/40 blur-xl" />
+
+        {/* Premium shine sweep */}
+<div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+  <div
+    className="absolute -left-1/2 top-0 h-full w-1/2 bg-gradient-to-r from-transparent via-white/40 to-transparent
+    skew-x-12 translate-x-0 group-hover:translate-x-[250%] transition-transform duration-700 ease-out"
+  />
+</div>
+
 
         <div className="p-6 space-y-4">
           <div className="flex items-start justify-between gap-3">
