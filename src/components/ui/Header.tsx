@@ -6,6 +6,7 @@ import { useScrollProgress } from "../../hooks/useScrollProgress";
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
+
 function cx(...parts: Array<string | false | undefined | null>) {
   return parts.filter(Boolean).join(" ");
 }
@@ -42,25 +43,27 @@ export default function Header() {
   const location = useLocation();
   const isHome = location.pathname === "/";
 
-  // ✅ Smooth morph progress
-  // Make it react fast: 0..1 within first 120px
-  const t = useScrollProgress(120);
+  // Smooth morph progress: 0..1 within first 120px
+  const tRaw = useScrollProgress(120);
+  const t = Math.min(1, Math.max(0, tRaw));
 
-  // ✅ SPREAD ON SCROLL (tight -> wide)
+  // Spread ON SCROLL (tight -> wide)
   const innerStyle = useMemo(() => {
-    const maxW = lerp(980, 1600, t); // spreads out as you scroll
-    const px = lerp(16, 40, t); // a bit more padding as it spreads
+    // spreads out as you scroll
+    const maxW = isHome ? lerp(980, 1600, t) : 1200;
+    const px = isHome ? lerp(16, 40, t) : 24;
+
     return {
       maxWidth: `${maxW}px`,
       paddingLeft: `${px}px`,
       paddingRight: `${px}px`,
-      transition: "max-width 220ms ease, padding 220ms ease",
+      transition: "max-width 240ms ease, padding 240ms ease",
     } as React.CSSProperties;
-  }, [t]);
+  }, [isHome, t]);
 
-  // ✅ Header frosted background that ramps up immediately
+  // Frosted header background ramps up
   const headerStyle = useMemo(() => {
-    const bgAlpha = lerp(0.0, 0.82, t); // transparent -> white
+    const bgAlpha = lerp(0.0, 0.82, t);
     const borderAlpha = lerp(0.0, 0.12, t);
     const shadowAlpha = lerp(0.0, 0.16, t);
 
@@ -146,15 +149,6 @@ export default function Header() {
                   Contracts
                 </NavLink>
 
-                {user?.role === "admin" && (
-                  <Link
-                    to="/admin"
-                    className="ml-1 rounded-full px-3 py-2 text-sm font-medium text-black/80 hover:text-black hover:bg-black/5 transition"
-                  >
-                    Admin
-                  </Link>
-                )}
-
                 <NavLink
                   to="/profile"
                   className={({ isActive }) => navItemClass(isActive, t)}
@@ -162,7 +156,19 @@ export default function Header() {
                   Profile
                 </NavLink>
 
-                {/* user chip */}
+                {user.role === "admin" && (
+                  <Link
+                    to="/admin"
+                    className={cx(
+                      "ml-1 rounded-full px-3 py-2 text-sm font-medium",
+                      "text-black/80 hover:text-black hover:bg-black/5 transition",
+                    )}
+                  >
+                    Admin
+                  </Link>
+                )}
+
+                {/* User chip */}
                 <div className="hidden sm:flex items-center gap-2 ml-2 pl-2 border-l border-black/10">
                   <div className="h-9 w-9 rounded-xl bg-black/5 border border-black/10 grid place-items-center">
                     <span className="text-xs font-bold text-black">
@@ -175,6 +181,7 @@ export default function Header() {
                     </p>
                     <p className="text-xs text-black/60">{user.role}</p>
                   </div>
+
                   <button
                     type="button"
                     onClick={logout}
@@ -184,7 +191,7 @@ export default function Header() {
                   </button>
                 </div>
 
-                {/* mobile logout */}
+                {/* Mobile logout */}
                 <button
                   type="button"
                   onClick={logout}
@@ -198,7 +205,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* spacer */}
+      {/* Spacer so page content starts below fixed header */}
       <div className="h-16" />
     </>
   );
