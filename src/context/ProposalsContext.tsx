@@ -1,11 +1,13 @@
-import React, { useCallback, useMemo, useState } from "react";
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import type { Proposal } from "../types/proposal.types";
-import { ProposalsContext } from "./proposals.context";
 import type { CreateProposalInput, ProposalsContextValue } from "./proposals.context";
 import { proposalsMock } from "../mocks/proposals.mock";
 import { useAuth } from "../hooks/useAuth";
 
 const STORAGE_KEY = "freelancehub_proposals";
+
+export const ProposalsContext = createContext<ProposalsContextValue | undefined>(undefined);
 
 function loadInitialProposals(): Proposal[] {
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -27,18 +29,13 @@ function generateProposalId() {
 
 export function ProposalsProvider({ children }: { children: React.ReactNode }) {
   const [proposals, setProposals] = useState<Proposal[]>(loadInitialProposals);
-
   const { user } = useAuth();
 
-  // ✅ Only freelancers can submit proposals (hard guard)
-  const addProposal = useCallback(
+  // ✅ Hard guard: only freelancers can create proposals, identity injected from auth
+  const addProposal = useCallback<ProposalsContextValue["addProposal"]>(
     (data: CreateProposalInput) => {
-      if (!user) {
-        throw new Error("You must be logged in to submit a proposal.");
-      }
-      if (user.role !== "freelancer") {
-        throw new Error("Only freelancers can submit proposals.");
-      }
+      if (!user) throw new Error("You must be logged in to submit a proposal.");
+      if (user.role !== "freelancer") throw new Error("Only freelancers can submit proposals.");
 
       const newProposal: Proposal = {
         id: generateProposalId(),
@@ -66,18 +63,20 @@ export function ProposalsProvider({ children }: { children: React.ReactNode }) {
     [proposals]
   );
 
-  const updateProposalStatus = useCallback(
-    (proposalId: string, status: Proposal["status"]) => {
+  const updateProposalStatus = useCallback<ProposalsContextValue["updateProposalStatus"]>(
+    (proposalId, status) => {
+      const ACCEPTED = "accepted" as Proposal["status"];
+      const REJECTED = "rejected" as Proposal["status"];
+
       setProposals((prev) => {
         const target = prev.find((p) => p.id === proposalId);
         if (!target) return prev;
 
-        const updated = prev.map((p): Proposal => {
-          if (p.id === proposalId) return { ...p, status };
+        const updated: Proposal[] = prev.map((p) => {
+          if (p.id === proposalId) return { ...p, status } as Proposal;
 
-          // If one accepted, reject others for the same job
-          if (status === "accepted" && p.jobId === target.jobId) {
-            return { ...p, status: "rejected" as Proposal["status"] };
+          if (status === ACCEPTED && p.jobId === target.jobId) {
+            return { ...p, status: REJECTED } as Proposal;
           }
           return p;
         });
@@ -90,14 +89,15 @@ export function ProposalsProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo<ProposalsContextValue>(
-    () => ({
-      proposals,
-      addProposal,
-      getProposalsByJobId,
-      updateProposalStatus,
-    }),
+    () => ({ proposals, addProposal, getProposalsByJobId, updateProposalStatus }),
     [proposals, addProposal, getProposalsByJobId, updateProposalStatus]
   );
 
   return <ProposalsContext.Provider value={value}>{children}</ProposalsContext.Provider>;
+}
+
+export function useProposals() {
+  const ctx = useContext(ProposalsContext);
+  if (!ctx) throw new Error("useProposals must be used inside ProposalsProvider");
+  return ctx;
 }
