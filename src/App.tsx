@@ -177,6 +177,16 @@ function AnimatedRoutes() {
           } />
 
         <Route
+          path="/profile/:userId"
+          element={
+          <ProtectedRoute>
+              <PageTransition>
+                <Profile />
+              </PageTransition>
+            </ProtectedRoute>
+          } />
+
+        <Route
           path="/notifications"
           element={
           <ProtectedRoute>

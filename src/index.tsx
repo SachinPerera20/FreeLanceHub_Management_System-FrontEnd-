@@ -6,9 +6,7 @@ import { seedIfNeeded } from './mocks/seed';
 seedIfNeeded();
 const root = document.getElementById('root');
 if (root) {
-  createRoot(root).render(
-    <React.StrictMode>
+  createRoot(root).render(<React.StrictMode>
       <App />
-    </React.StrictMode>
-  );
+    </React.StrictMode>);
 }
