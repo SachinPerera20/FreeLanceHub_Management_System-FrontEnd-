@@ -10,8 +10,10 @@ export const jobsService = {
   async getJobById(id: string): Promise<Job | undefined> {
     try {
       const res = await api.get(`/jobs/${id}`);
+      console.log('getJobById response:', res.data); // 👈 add this
       return res.data as Job;
-    } catch {
+    } catch (err) {
+      console.error('getJobById failed:', err); // 👈 and this
       return undefined;
     }
   },

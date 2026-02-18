@@ -15,9 +15,9 @@ export function Notifications() {
     isLoading
   } = useNotifications();
   const navigate = useNavigate();
-  useEffect(() => {
+  /*useEffect(() => {
     fetchNotifications();
-  }, [fetchNotifications]);
+  }, [fetchNotifications]);*/
   const handleNotificationClick = async (notification: any) => {
     if (!notification.isRead) {
       await markAsRead(notification.id);

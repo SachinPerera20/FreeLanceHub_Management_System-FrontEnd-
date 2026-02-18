@@ -54,6 +54,7 @@ export function ProposalsProvider({
     if (job) await notificationsService.createNotification(job.createdBy, 'proposal_submitted', 'New Proposal', `${user.name} submitted a proposal for "${job.title}"`, job.id);
     return proposal;
   }, [user]);
+
   const acceptProposal = useCallback(async (proposalOrId: Proposal | string) => {
     if (!user) throw new Error('Not authenticated');
     let proposal: Proposal;
@@ -64,22 +65,29 @@ export function ProposalsProvider({
     } else {
       proposal = proposalOrId;
     }
-    await proposalsService.acceptProposal(proposal.id);
+
+    // Accepts proposal AND creates contract on backend
+    const contract = await proposalsService.acceptProposal(proposal.id);
+
+    // Create chat thread between client and freelancer 👈 this was missing
+    await chatService.createThread(proposal.jobId, user.id, proposal.freelancerId);
+
+    // Reject other pending proposals
     const allForJob = await proposalsService.listByJob(proposal.jobId);
     for (const p of allForJob) {
       if (p.id !== proposal.id && p.status === 'pending') {
         await proposalsService.rejectProposal(p.id);
-        await notificationsService.createNotification(p.freelancerId, 'proposal_rejected', 'Proposal Not Selected', 'Your proposal for this job was not selected', p.jobId);
       }
     }
-    await jobsService.updateJobStatus(proposal.jobId, 'in_progress');
-    const contract = await contractsService.createFromAcceptedProposal(proposal.jobId, proposal.id, user.id, proposal.freelancerId, proposal.bidAmount);
-    await chatService.createThread(proposal.jobId, user.id, proposal.freelancerId);
-    await notificationsService.createNotification(proposal.freelancerId, 'proposal_accepted', 'Proposal Accepted!', 'Your proposal has been accepted', proposal.jobId);
+
+    // Send notifications
     const job = await jobsService.getJobById(proposal.jobId);
     const jobTitle = job?.title || 'a job';
+
+    await notificationsService.createNotification(proposal.freelancerId, 'proposal_accepted', 'Proposal Accepted!', 'Your proposal has been accepted', proposal.jobId);
     await notificationsService.createNotification(user.id, 'contract_created', 'Contract Created', `Contract created for "${jobTitle}"`, contract.id);
     await notificationsService.createNotification(proposal.freelancerId, 'contract_created', 'Contract Created', `Contract created for "${jobTitle}"`, contract.id);
+
     setProposals(await proposalsService.listByJob(proposal.jobId));
   }, [user, proposals]);
   const rejectProposal = useCallback(async (proposalIdOrObj: string, freelancerId?: string) => {

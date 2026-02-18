@@ -25,16 +25,17 @@ export function NotificationsProvider({
   const {
     user
   } = useAuth();
-  const fetchNotifications = useCallback(async () => {
+  const fetchNotifications = useCallback(async (showLoader = true) => {
     if (!user) return;
-    setLoading(true);
+    if (showLoader) setLoading(true);
     setNotifications(await notificationsService.listByUser(user.id));
     setUnreadCount(await notificationsService.getUnreadCount(user.id));
     setLoading(false);
   }, [user]);
+
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 3000);
+    fetchNotifications(true);  // show spinner on first load
+    const interval = setInterval(() => fetchNotifications(false), 3000);  // silent refresh
     return () => clearInterval(interval);
   }, [fetchNotifications]);
   const markRead = useCallback(async (id: string) => {

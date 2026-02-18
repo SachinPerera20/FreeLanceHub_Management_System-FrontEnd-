@@ -16,20 +16,6 @@ export const contractsService = {
     }
   },
 
-  async createFromAcceptedProposal(
-      jobId: string,
-      proposalId: string,
-      clientId: string,
-      freelancerId: string,
-      agreedPrice: number
-  ): Promise<Contract> {
-    // Contract is created server-side when proposal is accepted.
-    // This function is kept so the state file doesn't break — it
-    // calls the same accept endpoint which returns the new contract.
-    const res = await api.post(`/proposals/${proposalId}/accept`);
-    return res.data as Contract;
-  },
-
   async updateStatus(contractId: string, status: ContractStatus): Promise<Contract> {
     const res = await api.patch(`/contracts/${contractId}/status?status=${status}`);
     return res.data as Contract;

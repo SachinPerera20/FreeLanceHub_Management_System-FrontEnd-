@@ -17,11 +17,7 @@ export const proposalsService = {
     return res.data as Proposal[];
   },
 
-  async createProposal(
-      input: CreateProposalInput,
-      freelancerId: string,
-      freelancerName: string
-  ): Promise<Proposal> {
+  async createProposal(input: CreateProposalInput, freelancerId: string, freelancerName: string): Promise<Proposal> {
     const res = await api.post('/proposals', input);
     return res.data as Proposal;
   },
@@ -31,9 +27,9 @@ export const proposalsService = {
     return res.data as Proposal;
   },
 
-  async acceptProposal(proposalId: string): Promise<Proposal> {
+  async acceptProposal(proposalId: string): Promise<any> {
     const res = await api.post(`/proposals/${proposalId}/accept`);
-    return res.data as Proposal;
+    return res.data;
   },
 
   async rejectProposal(proposalId: string): Promise<Proposal> {
