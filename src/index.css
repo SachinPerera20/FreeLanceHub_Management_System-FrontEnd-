@@ -1,0 +1,86 @@
+/* @import url() FONT IMPORTS MUST ALWAYS BE AT THE VERY TOP OF THIS FILE, ABOVE THE TAILWIND IMPORTS — DO NOT DELETE THIS COMMENT */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* CRITICAL: THE FOLLOWING TAILWIND IMPORTS MUST NEVER BE DELETED OR REORDERED — DO NOT DELETE THIS COMMENT */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* END TAILWIND IMPORTS — ALL OTHER CSS MUST GO BELOW THIS LINE */
+
+:root {
+  /* Premium Dark Theme Tokens (Orange accent) */
+  --bg-root: #000000;
+  --bg-surface: #0a0a0a;
+  --bg-surface-hover: #111111;
+  --bg-surface-active: #1a1a1a;
+  --border-subtle: #222222;
+  --border-strong: #333333;
+  --text-primary: #ffffff;
+  --text-secondary: #888888;
+  --text-tertiary: #555555;
+  --accent-primary: #f97316; /* orange-500 */
+  --accent-secondary: #222222;
+  /* Functional Colors */
+  --color-success: #10b981;
+  --color-error: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #3b82f6;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+@layer base {
+  body {
+    @apply bg-[var(--bg-root)] text-[var(--text-primary)] antialiased selection:bg-orange-500 selection:text-white;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight text-white;
+  }
+  /* Reset form elements to inherit font */
+  input, textarea, select, button {
+    @apply font-sans;
+  }
+}
+@layer components {
+  /* Glass / Surface Utilities */
+  .glass-panel {
+    @apply bg-[#0a0a0a]/80 backdrop-blur-xl border border-[#222222];
+  }
+  .surface-card {
+    @apply bg-[#0a0a0a] border border-[#222222] transition-all duration-300;
+  }
+  /* Typography Utilities */
+  .text-subtle {
+    @apply text-[#888888];
+  }
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+  }
+}
+/* Animation Utilities */
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+}
