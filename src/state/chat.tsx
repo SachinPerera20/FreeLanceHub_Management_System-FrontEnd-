@@ -59,6 +59,12 @@ export function ChatProvider({ children }: {children: ReactNode;}) {
   const sendMessage = useCallback(
     async (threadId: string, text: string, receiverId?: string) => {
       if (!user) return;
+      // Block contact information sharing
+      const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i;
+      const phoneRegex = /(\+?\d[\d\s\-()]{7,15})/;
+      if (emailRegex.test(text) || phoneRegex.test(text)) {
+        return; // silently block at service layer
+      }
       let actualReceiverId = receiverId;
       if (!actualReceiverId) {
         const thread = threads.find((t) => t.id === threadId);

@@ -15,25 +15,24 @@ interface ContractsState {
   completeContract: (contractId: string) => Promise<void>;
 }
 const ContractsContext = createContext<ContractsState | undefined>(undefined);
-export function ContractsProvider({ children }: {children: ReactNode;}) {
+export function ContractsProvider({
+  children
+
+
+}: {children: ReactNode;}) {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [currentContract, setCurrentContract] = useState<Contract | null>(null);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const fetchContracts = useCallback(async () => {
     setLoading(true);
     const all = await contractsService.listContracts();
-    if (user && user.role !== 'admin')
-    setContracts(
-      all.filter((c) => c.clientId === user.id || c.freelancerId === user.id)
-    );else
-    setContracts(all);
+    if (user && user.role !== 'admin') setContracts(all.filter((c) => c.clientId === user.id || c.freelancerId === user.id));else setContracts(all);
     setLoading(false);
   }, [user]);
-  const getContractById = useCallback(
-    async (id: string) => contractsService.getContractById(id),
-    []
-  );
+  const getContractById = useCallback(async (id: string) => contractsService.getContractById(id), []);
   const fetchContractById = useCallback(async (id: string) => {
     setLoading(true);
     const contract = await contractsService.getContractById(id);
@@ -45,20 +44,8 @@ export function ContractsProvider({ children }: {children: ReactNode;}) {
     await jobsService.updateJobStatus(contract.jobId, 'completed');
     const job = await jobsService.getJobById(contract.jobId);
     const title = job?.title || 'a job';
-    await notificationsService.createNotification(
-      contract.clientId,
-      'job_status_changed',
-      'Contract Completed',
-      `Contract for "${title}" has been completed`,
-      contractId
-    );
-    await notificationsService.createNotification(
-      contract.freelancerId,
-      'job_status_changed',
-      'Contract Completed',
-      `Contract for "${title}" has been completed`,
-      contractId
-    );
+    await notificationsService.createNotification(contract.clientId, 'job_status_changed', 'Contract Completed', `Contract for "${title}" has been completed`, contractId);
+    await notificationsService.createNotification(contract.freelancerId, 'job_status_changed', 'Contract Completed', `Contract for "${title}" has been completed`, contractId);
     const updated = {
       ...contract,
       status: 'completed' as const,
@@ -67,26 +54,21 @@ export function ContractsProvider({ children }: {children: ReactNode;}) {
     setContracts((prev) => prev.map((c) => c.id === contractId ? updated : c));
     setCurrentContract(updated);
   }, []);
-  return (
-    <ContractsContext.Provider
-      value={{
-        contracts,
-        currentContract,
-        loading,
-        isLoading: loading,
-        fetchContracts,
-        getContractById,
-        fetchContractById,
-        completeContract
-      }}>
-
+  return <ContractsContext.Provider value={{
+    contracts,
+    currentContract,
+    loading,
+    isLoading: loading,
+    fetchContracts,
+    getContractById,
+    fetchContractById,
+    completeContract
+  }}>
       {children}
-    </ContractsContext.Provider>);
-
+    </ContractsContext.Provider>;
 }
 export function useContracts(): ContractsState {
   const ctx = useContext(ContractsContext);
-  if (!ctx)
-  throw new Error('useContracts must be used within ContractsProvider');
+  if (!ctx) throw new Error('useContracts must be used within ContractsProvider');
   return ctx;
 }
