@@ -53,7 +53,7 @@ export function Header() {
           </NavLink>
 
           {user ? <>
-              {user.role === 'client' && <>
+              {user.role === 'CLIENT' && <>
                   <NavLink to="/jobs" icon={Search}>
                     Find Talent
                   </NavLink>
@@ -65,7 +65,7 @@ export function Header() {
                   </NavLink>
                 </>}
 
-              {user.role === 'freelancer' && <>
+              {user.role === 'FREELANCER' && <>
                   <NavLink to="/jobs" icon={Search}>
                     Find Work
                   </NavLink>
@@ -144,13 +144,13 @@ export function Header() {
           <div className="px-4 py-6 space-y-4">
             <NavLink to="/">Home</NavLink>
             {user ? <>
-                {user.role === 'client' && <>
+                {user.role === 'CLIENT' && <>
                     <NavLink to="/jobs">Find Talent</NavLink>
                     <NavLink to="/jobs/create">Create Request</NavLink>
                     <NavLink to="/jobs/my">My Requests</NavLink>
                     <NavLink to="/contracts">Contracts</NavLink>
                   </>}
-                {user.role === 'freelancer' && <>
+                {user.role === 'FREELANCER' && <>
                     <NavLink to="/jobs">Find Work</NavLink>
                     <NavLink to="/jobs/applied">Applied Jobs</NavLink>
                     <NavLink to="/jobs/saved">Saved Jobs</NavLink>
