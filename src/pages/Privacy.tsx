@@ -1,8 +1,7 @@
 import React from 'react';
 import { Layout } from '../components/ui/Layout';
 export function Privacy() {
-  return (
-    <Layout>
+  return <Layout>
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="border-b border-[#222222] pb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
@@ -97,6 +96,5 @@ export function Privacy() {
           </section>
         </div>
       </div>
-    </Layout>);
-
+    </Layout>;
 }

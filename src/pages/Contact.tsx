@@ -1,16 +1,10 @@
 import React from 'react';
 import { Layout } from '../components/ui/Layout';
 import { Button, Input, Textarea } from '../components/ui/FormControls';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle } from
-'../components/ui/Cards';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/Cards';
 import { Mail, MessageSquare, MapPin } from 'lucide-react';
 export function Contact() {
-  return (
-    <Layout>
+  return <Layout>
       <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12">
         <div className="space-y-8">
           <div>
@@ -60,18 +54,10 @@ export function Contact() {
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div className="grid grid-cols-2 gap-4">
                 <Input label="Name" placeholder="Your name" />
-                <Input
-                  label="Email"
-                  type="email"
-                  placeholder="your@email.com" />
-
+                <Input label="Email" type="email" placeholder="your@email.com" />
               </div>
               <Input label="Subject" placeholder="How can we help?" />
-              <Textarea
-                label="Message"
-                placeholder="Tell us more..."
-                className="min-h-[150px]" />
-
+              <Textarea label="Message" placeholder="Tell us more..." className="min-h-[150px]" />
               <Button type="submit" className="w-full">
                 Send Message
               </Button>
@@ -79,6 +65,5 @@ export function Contact() {
           </CardContent>
         </Card>
       </div>
-    </Layout>);
-
+    </Layout>;
 }

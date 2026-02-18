@@ -3,21 +3,24 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useContracts } from '../../state/contracts';
 import { usePayments } from '../../state/payments';
 import { Layout } from '../../components/ui/Layout';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle } from
-'../../components/ui/Cards';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Cards';
 import { Button, Input } from '../../components/ui/FormControls';
 import { CreditCard, Lock, ShieldCheck } from 'lucide-react';
 export function Checkout() {
-  const { contractId } = useParams<{
+  const {
+    contractId
+  } = useParams<{
     contractId: string;
   }>();
   const navigate = useNavigate();
-  const { currentContract, fetchContractById } = useContracts();
-  const { processPayment, isLoading } = usePayments();
+  const {
+    currentContract,
+    fetchContractById
+  } = useContracts();
+  const {
+    processPayment,
+    isLoading
+  } = usePayments();
   // Form state
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
@@ -32,18 +35,14 @@ export function Checkout() {
   const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const payment = await processPayment(
-        currentContract.id,
-        currentContract.agreedPrice
-      );
+      const payment = await processPayment(currentContract.id, currentContract.agreedPrice);
       navigate(`/payments/result/${payment.id}`);
     } catch (error) {
       console.error('Payment failed', error);
       // Error handled in hook/service, but we could show toast here
     }
   };
-  return (
-    <Layout>
+  return <Layout>
       <div className="max-w-lg mx-auto">
         <h1 className="text-3xl font-bold text-white mb-8 text-center">
           Checkout
@@ -64,38 +63,13 @@ export function Checkout() {
 
           <CardContent className="pt-6">
             <form onSubmit={handlePayment} className="space-y-5">
-              <Input
-                label="Cardholder Name"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required />
+              <Input label="Cardholder Name" placeholder="John Doe" value={name} onChange={(e) => setName(e.target.value)} required />
 
-
-              <Input
-                label="Card Number"
-                placeholder="4242 4242 4242 4242"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                required />
-
+              <Input label="Card Number" placeholder="4242 4242 4242 4242" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} required />
 
               <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="Expiry"
-                  placeholder="MM/YY"
-                  value={expiry}
-                  onChange={(e) => setExpiry(e.target.value)}
-                  required />
-
-                <Input
-                  label="CVC"
-                  placeholder="123"
-                  type="password"
-                  value={cvc}
-                  onChange={(e) => setCvc(e.target.value)}
-                  required />
-
+                <Input label="Expiry" placeholder="MM/YY" value={expiry} onChange={(e) => setExpiry(e.target.value)} required />
+                <Input label="CVC" placeholder="123" type="password" value={cvc} onChange={(e) => setCvc(e.target.value)} required />
               </div>
 
               <div className="bg-blue-900/20 border border-blue-900/50 rounded-lg p-3 flex items-start gap-3">
@@ -106,17 +80,12 @@ export function Checkout() {
                 </p>
               </div>
 
-              <Button
-                type="submit"
-                className="w-full h-12 text-lg"
-                isLoading={isLoading}>
-
+              <Button type="submit" className="w-full h-12 text-lg" isLoading={isLoading}>
                 <Lock className="w-4 h-4 mr-2" /> Pay Now
               </Button>
             </form>
           </CardContent>
         </Card>
       </div>
-    </Layout>);
-
+    </Layout>;
 }

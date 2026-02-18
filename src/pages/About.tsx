@@ -2,8 +2,7 @@ import React from 'react';
 import { Layout } from '../components/ui/Layout';
 import { GraduationCap, Briefcase, Smile, Globe } from 'lucide-react';
 export function About() {
-  return (
-    <Layout>
+  return <Layout>
       <div className="max-w-4xl mx-auto space-y-20">
         {/* Hero */}
         <div className="text-center space-y-6">
@@ -101,6 +100,5 @@ export function About() {
           </div>
         </div>
       </div>
-    </Layout>);
-
+    </Layout>;
 }

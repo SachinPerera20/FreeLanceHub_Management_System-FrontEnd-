@@ -8,7 +8,9 @@ import { ChatWindow } from '../../components/chat/ChatWindow';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../../components/ui/FormControls';
 export function ChatRoom() {
-  const { threadId } = useParams<{
+  const {
+    threadId
+  } = useParams<{
     threadId: string;
   }>();
   const {
@@ -20,7 +22,9 @@ export function ChatRoom() {
     sendMessage,
     isLoading
   } = useChat();
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     fetchThreads();
@@ -35,20 +39,14 @@ export function ChatRoom() {
   }, [threadId, fetchMessages]);
   if (!user) return null;
   const activeThread = threads.find((t) => t.id === threadId);
-  return (
-    <Layout>
+  return <Layout>
       <div className="h-[calc(100vh-200px)] min-h-[500px] bg-[#111827] border border-gray-800 rounded-xl overflow-hidden flex shadow-2xl">
         {/* Sidebar List - Hidden on Mobile when in room */}
         <div className="hidden md:block w-1/3 border-r border-gray-800 bg-[#0a0f1e]/50">
           <div className="p-4 border-b border-gray-800">
             <h2 className="text-xl font-bold text-white">Messages</h2>
           </div>
-          <ChatThreadList
-            threads={threads}
-            activeThreadId={threadId}
-            currentUserId={user.id}
-            onSelectThread={(id) => navigate(`/chat/${id}`)} />
-
+          <ChatThreadList threads={threads} activeThreadId={threadId} currentUserId={user.id} onSelectThread={(id) => navigate(`/chat/${id}`)} />
         </div>
 
         {/* Chat Window */}
@@ -60,20 +58,10 @@ export function ChatRoom() {
             </Button>
           </div>
 
-          {activeThread ?
-          <ChatWindow
-            thread={activeThread}
-            messages={messages}
-            currentUserId={user.id}
-            onSendMessage={(text) => sendMessage(threadId!, text)} /> :
-
-
-          <div className="flex-1 flex items-center justify-center">
+          {activeThread ? <ChatWindow thread={activeThread} messages={messages} currentUserId={user.id} onSendMessage={(text) => sendMessage(threadId!, text)} /> : <div className="flex-1 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-teal-500"></div>
-            </div>
-          }
+            </div>}
         </div>
       </div>
-    </Layout>);
-
+    </Layout>;
 }

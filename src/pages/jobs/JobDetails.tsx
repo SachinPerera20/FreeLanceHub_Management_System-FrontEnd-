@@ -5,32 +5,28 @@ import { useAuth } from '../../state/auth';
 import { useProposals } from '../../state/proposals';
 import { useAppliedSaved } from '../../state/appliedSaved';
 import { Layout } from '../../components/ui/Layout';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle } from
-'../../components/ui/Cards';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Cards';
 import { Button } from '../../components/ui/FormControls';
 import { StatusBadge, CategoryBadge } from '../../components/ui/Badges';
 import { ProposalModal } from '../../components/jobs/ProposalModal';
 import { ProposalList } from '../../components/jobs/ProposalList';
-import {
-  DollarSign,
-  Clock,
-  Calendar,
-  Bookmark,
-  BookmarkCheck,
-  ArrowLeft } from
-'lucide-react';
+import { DollarSign, Clock, Calendar, Bookmark, BookmarkCheck, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
 export function JobDetails() {
-  const { id } = useParams<{
+  const {
+    id
+  } = useParams<{
     id: string;
   }>();
   const navigate = useNavigate();
-  const { currentJob, fetchJobById, isLoading: jobLoading } = useJobs();
-  const { user } = useAuth();
+  const {
+    currentJob,
+    fetchJobById,
+    isLoading: jobLoading
+  } = useJobs();
+  const {
+    user
+  } = useAuth();
   const {
     proposals,
     fetchProposalsByJob,
@@ -38,8 +34,14 @@ export function JobDetails() {
     rejectProposal,
     isLoading: proposalsLoading
   } = useProposals();
-  const { savedJobs, saveJob, unsaveJob, appliedJobs, applyToJob, isApplied } =
-  useAppliedSaved();
+  const {
+    savedJobs,
+    saveJob,
+    unsaveJob,
+    appliedJobs,
+    applyToJob,
+    isApplied
+  } = useAppliedSaved();
   const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
   useEffect(() => {
     if (id) {
@@ -48,13 +50,11 @@ export function JobDetails() {
     }
   }, [id, fetchJobById, fetchProposalsByJob]);
   if (jobLoading || !currentJob) {
-    return (
-      <Layout>
+    return <Layout>
         <div className="flex justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
         </div>
-      </Layout>);
-
+      </Layout>;
   }
   const isOwner = user?.id === currentJob.createdBy;
   const isFreelancer = user?.role === 'freelancer';
@@ -70,13 +70,8 @@ export function JobDetails() {
   const handleProposalSubmit = () => {
     setIsProposalModalOpen(true);
   };
-  return (
-    <Layout>
-      <Button
-        variant="ghost"
-        className="mb-6 pl-0 hover:bg-transparent hover:text-teal-400"
-        onClick={() => navigate(-1)}>
-
+  return <Layout>
+      <Button variant="ghost" className="mb-6 pl-0 hover:bg-transparent hover:text-teal-400" onClick={() => navigate(-1)}>
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Jobs
       </Button>
 
@@ -100,18 +95,9 @@ export function JobDetails() {
                     {currentJob.createdByName || 'Unknown'}
                   </p>
                 </div>
-                {isFreelancer &&
-                <button
-                  onClick={handleSaveToggle}
-                  className={`p-2 rounded-full transition-colors ${isSaved ? 'text-teal-400 bg-teal-900/20' : 'text-gray-500 hover:text-white hover:bg-gray-800'}`}>
-
-                    {isSaved ?
-                  <BookmarkCheck className="w-6 h-6" /> :
-
-                  <Bookmark className="w-6 h-6" />
-                  }
-                  </button>
-                }
+                {isFreelancer && <button onClick={handleSaveToggle} className={`p-2 rounded-full transition-colors ${isSaved ? 'text-teal-400 bg-teal-900/20' : 'text-gray-500 hover:text-white hover:bg-gray-800'}`}>
+                    {isSaved ? <BookmarkCheck className="w-6 h-6" /> : <Bookmark className="w-6 h-6" />}
+                  </button>}
               </div>
             </CardHeader>
 
@@ -130,14 +116,9 @@ export function JobDetails() {
                   Required Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {currentJob.skills.map((skill) =>
-                  <span
-                    key={skill}
-                    className="px-3 py-1 bg-gray-800 text-gray-300 rounded-lg text-sm">
-
+                  {currentJob.skills.map((skill) => <span key={skill} className="px-3 py-1 bg-gray-800 text-gray-300 rounded-lg text-sm">
                       {skill}
-                    </span>
-                  )}
+                    </span>)}
                 </div>
               </div>
             </CardContent>
@@ -149,21 +130,11 @@ export function JobDetails() {
               Proposals ({proposals.length})
             </h2>
 
-            {isOwner ?
-            <ProposalList
-              proposals={proposals}
-              onAccept={acceptProposal}
-              onReject={rejectProposal}
-              isOwner={true} /> :
-
-
-            // For freelancers/public: only show their own proposal or nothing
-            <div className="bg-[#111827]/30 border border-gray-800 rounded-xl p-6 text-center text-gray-500">
-                {hasApplied ?
-              'You have submitted a proposal for this job.' :
-              'Proposals are private and only visible to the client.'}
-              </div>
-            }
+            {isOwner ? <ProposalList proposals={proposals} onAccept={acceptProposal} onReject={rejectProposal} isOwner={true} /> :
+          // For freelancers/public: only show their own proposal or nothing
+          <div className="bg-[#111827]/30 border border-gray-800 rounded-xl p-6 text-center text-gray-500">
+                {hasApplied ? 'You have submitted a proposal for this job.' : 'Proposals are private and only visible to the client.'}
+              </div>}
           </div>
         </div>
 
@@ -178,27 +149,17 @@ export function JobDetails() {
                 </span>
               </div>
 
-              {isFreelancer && currentJob.status === 'open' && !hasApplied &&
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={handleProposalSubmit}>
-
+              {isFreelancer && currentJob.status === 'open' && !hasApplied && <Button className="w-full" size="lg" onClick={handleProposalSubmit}>
                   Apply Now
-                </Button>
-              }
+                </Button>}
 
-              {isFreelancer && hasApplied &&
-              <Button className="w-full" variant="secondary" disabled>
+              {isFreelancer && hasApplied && <Button className="w-full" variant="secondary" disabled>
                   Applied
-                </Button>
-              }
+                </Button>}
 
-              {currentJob.status !== 'open' &&
-              <div className="w-full py-3 bg-gray-800 text-center text-gray-400 rounded-lg">
+              {currentJob.status !== 'open' && <div className="w-full py-3 bg-gray-800 text-center text-gray-400 rounded-lg">
                   Job is in progress
-                </div>
-              }
+                </div>}
             </CardContent>
           </Card>
 
@@ -233,52 +194,18 @@ export function JobDetails() {
         </div>
       </div>
 
-      {isFreelancer &&
-      <ProposalModal
-        isOpen={isProposalModalOpen}
-        onClose={() => setIsProposalModalOpen(false)}
-        jobId={currentJob.id}
-        jobTitle={currentJob.title} />
-
-      }
-    </Layout>);
-
+      {isFreelancer && <ProposalModal isOpen={isProposalModalOpen} onClose={() => setIsProposalModalOpen(false)} jobId={currentJob.id} jobTitle={currentJob.title} />}
+    </Layout>;
 }
 function MapPinIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
-
+  return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M20 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0Z" />
       <circle cx="12" cy="10" r="3" />
-    </svg>);
-
+    </svg>;
 }
 function CheckCircleIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
-
+  return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
       <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>);
-
+    </svg>;
 }
