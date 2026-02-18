@@ -54,7 +54,7 @@ export function ContractDetails() {
         setClientUser(client);
         setFreelancerUser(freelancer);
         // Check for existing review
-        if (user?.role === 'client') {
+        if (user?.role === 'CLIENT') {
           const reviews = await reviewsService.listByFreelancer(
             currentContract.freelancerId
           );
@@ -74,7 +74,7 @@ export function ContractDetails() {
       </Layout>);
 
   }
-  const isClient = user?.role === 'client';
+  const isClient = user?.role === 'CLIENT';
   const handleComplete = async () => {
     if (confirm('Are you sure you want to mark this contract as completed?')) {
       await completeContract(currentContract.id);
@@ -159,7 +159,7 @@ export function ContractDetails() {
                 Communication
               </h3>
               <p className="text-gray-400 text-sm mb-4">
-                Chat with your {isClient ? 'freelancer' : 'client'} about the
+                Chat with your {isClient ? 'Freelancer' : 'Client'} about the
                 project.
               </p>
               <Link to="/chat" className="w-full">

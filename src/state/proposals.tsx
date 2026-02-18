@@ -68,10 +68,15 @@ export function ProposalsProvider({
 
     // Accepts proposal AND creates contract on backend
     const contract = await proposalsService.acceptProposal(proposal.id);
+    console.log('Contract created:', contract);
 
-    // Create chat thread between client and freelancer 👈 this was missing
-    await chatService.createThread(proposal.jobId, user.id, proposal.freelancerId);
-
+// Create chat thread
+    try {
+      const thread = await chatService.createThread(proposal.jobId, user.id, proposal.freelancerId);
+      console.log('Thread created:', thread);
+    } catch (err) {
+      console.error('Thread creation failed:', err);
+    }
     // Reject other pending proposals
     const allForJob = await proposalsService.listByJob(proposal.jobId);
     for (const p of allForJob) {
@@ -90,6 +95,7 @@ export function ProposalsProvider({
 
     setProposals(await proposalsService.listByJob(proposal.jobId));
   }, [user, proposals]);
+
   const rejectProposal = useCallback(async (proposalIdOrObj: string, freelancerId?: string) => {
     let actualFreelancerId = freelancerId;
     if (!actualFreelancerId) {
