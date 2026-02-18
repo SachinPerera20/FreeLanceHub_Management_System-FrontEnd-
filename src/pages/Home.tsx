@@ -1,21 +1,45 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../state/auth';
-import { Button } from '../components/ui/FormControls';
-import { Header } from '../components/ui/Header';
-import { ArrowRight, BookOpen, Code, PenTool, Users, ShieldCheck, Zap, GraduationCap, Briefcase, Smile, Globe, Facebook, Linkedin, Instagram, CheckCircle2, Lock, Star, Award } from 'lucide-react';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../state/auth";
+import { Button } from "../components/ui/FormControls";
+import { Header } from "../components/ui/Header";
+import {
+  ArrowRight,
+  BookOpen,
+  Code,
+  PenTool,
+  Users,
+  ShieldCheck,
+  Zap,
+  GraduationCap,
+  Briefcase,
+  Smile,
+  Globe,
+  Facebook,
+  Linkedin,
+  Instagram,
+  CheckCircle2,
+  Lock,
+  Star,
+  Award,
+} from "lucide-react";
 export function Home() {
-  const {
-    user
-  } = useAuth();
-  return <div className="min-h-screen bg-black flex flex-col text-white selection:bg-[#f97316] selection:text-white">
+  const { user } = useAuth();
+  return (
+    <div className="min-h-screen bg-black flex flex-col text-white selection:bg-[#f97316] selection:text-white">
       <Header />
 
       {/* Hero Section */}
       <section className="py-24 md:py-32 text-center relative overflow-hidden bg-black">
         {/* Background Video */}
-        <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0 opacity-90">
-          <source src="/The-ASCII-Creation-AI-Collaboration-Loop.mp4" type="video/mp4" />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
+        >
+          <source src="public\herobgvid.mp4" type="video/mp4" />
         </video>
 
         {/* Dark Overlay for Readability */}
@@ -37,22 +61,36 @@ export function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            {user ? <Link to="/jobs">
-                <Button size="lg" className="w-full sm:w-auto min-w-[160px] shadow-lg shadow-orange-500/20">
+            {user ? (
+              <Link to="/jobs">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto min-w-[160px] shadow-lg shadow-orange-500/20"
+                >
                   Go to Dashboard <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
-              </Link> : <>
+              </Link>
+            ) : (
+              <>
                 <Link to="/register">
-                  <Button size="lg" className="w-full sm:w-auto min-w-[160px] shadow-lg shadow-orange-500/20">
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto min-w-[160px] shadow-lg shadow-orange-500/20"
+                  >
                     Get Started <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
                 </Link>
                 <Link to="/login">
-                  <Button variant="secondary" size="lg" className="w-full sm:w-auto min-w-[160px]">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="w-full sm:w-auto min-w-[160px]"
+                  >
                     Login
                   </Button>
                 </Link>
-              </>}
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -226,24 +264,35 @@ export function Home() {
             Popular Services
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[{
-            name: 'Assignment Help',
-            icon: BookOpen
-          }, {
-            name: 'Project Support',
-            icon: Code
-          }, {
-            name: 'Design & Slides',
-            icon: PenTool
-          }, {
-            name: 'Tutoring',
-            icon: Users
-          }].map((cat) => <Link key={cat.name} to={`/jobs?category=${cat.name}`} className="flex flex-col items-center justify-center p-8 bg-[#0a0a0a] border border-[#222222] rounded-xl hover:bg-[#111111] hover:border-[#444444] transition-all duration-300 group">
+            {[
+              {
+                name: "Assignment Help",
+                icon: BookOpen,
+              },
+              {
+                name: "Project Support",
+                icon: Code,
+              },
+              {
+                name: "Design & Slides",
+                icon: PenTool,
+              },
+              {
+                name: "Tutoring",
+                icon: Users,
+              },
+            ].map((cat) => (
+              <Link
+                key={cat.name}
+                to={`/jobs?category=${cat.name}`}
+                className="flex flex-col items-center justify-center p-8 bg-[#0a0a0a] border border-[#222222] rounded-xl hover:bg-[#111111] hover:border-[#444444] transition-all duration-300 group"
+              >
                 <cat.icon className="w-8 h-8 text-[#666666] group-hover:text-[#f97316] mb-4 transition-colors" />
                 <span className="text-[#888888] font-medium group-hover:text-white transition-colors">
                   {cat.name}
                 </span>
-              </Link>)}
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -255,7 +304,11 @@ export function Home() {
             {/* Column 1: Brand */}
             <div className="col-span-1">
               <Link to="/" className="flex items-center space-x-2 mb-4">
-                <img src="/Untitled_design_(1).png" alt="UniFreelancer" className="h-8 w-auto" />
+                <img
+                  src="/Untitled_design_(1).png"
+                  alt="UniFreelancer"
+                  className="h-8 w-auto"
+                />
               </Link>
               <p className="text-[#888888] text-sm leading-relaxed">
                 The premier marketplace for university talent. Connect,
@@ -268,22 +321,34 @@ export function Home() {
               <h4 className="font-semibold text-white mb-4">Product</h4>
               <ul className="space-y-3 text-sm text-[#888888]">
                 <li>
-                  <Link to="/how-it-works" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/how-it-works"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     How it Works
                   </Link>
                 </li>
                 <li>
-                  <Link to="/jobs" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/jobs"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Find Talent
                   </Link>
                 </li>
                 <li>
-                  <Link to="/jobs/create" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/jobs/create"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Post a Job
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contracts" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/contracts"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Contracts
                   </Link>
                 </li>
@@ -295,22 +360,34 @@ export function Home() {
               <h4 className="font-semibold text-white mb-4">Company</h4>
               <ul className="space-y-3 text-sm text-[#888888]">
                 <li>
-                  <Link to="/about" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/about"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     About
                   </Link>
                 </li>
                 <li>
-                  <Link to="/careers" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/careers"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Careers
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/contact"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Contact
                   </Link>
                 </li>
                 <li>
-                  <Link to="/blog" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/blog"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Blog
                   </Link>
                 </li>
@@ -322,17 +399,26 @@ export function Home() {
               <h4 className="font-semibold text-white mb-4">Legal</h4>
               <ul className="space-y-3 text-sm text-[#888888]">
                 <li>
-                  <Link to="/terms" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/terms"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link to="/privacy" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/privacy"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="/cookies" className="hover:text-[#f97316] transition-colors">
+                  <Link
+                    to="/cookies"
+                    className="hover:text-[#f97316] transition-colors"
+                  >
                     Cookie Policy
                   </Link>
                 </li>
@@ -346,18 +432,28 @@ export function Home() {
               reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="#" className="text-[#555555] hover:text-[#f97316] transition-colors">
+              <a
+                href="#"
+                className="text-[#555555] hover:text-[#f97316] transition-colors"
+              >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-[#555555] hover:text-[#f97316] transition-colors">
+              <a
+                href="#"
+                className="text-[#555555] hover:text-[#f97316] transition-colors"
+              >
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a href="#" className="text-[#555555] hover:text-[#f97316] transition-colors">
+              <a
+                href="#"
+                className="text-[#555555] hover:text-[#f97316] transition-colors"
+              >
                 <Instagram className="w-5 h-5" />
               </a>
             </div>
           </div>
         </div>
       </footer>
-    </div>;
+    </div>
+  );
 }
