@@ -42,11 +42,12 @@ export function ChatProvider({ children }: {children: ReactNode;}) {
     setGlobalUnread(await chatService.getUnreadCountForUser(user.id));
     setLoading(false);
   }, [user]);
-  useEffect(() => {
-    fetchThreads();
-    const interval = setInterval(fetchThreads, 3000);
-    return () => clearInterval(interval);
-  }, [fetchThreads]);
+    useEffect(() => {
+        if (!user) return;
+        fetchThreads();
+        const interval = setInterval(fetchThreads, 3000);
+        return () => clearInterval(interval);
+    }, [user]);
   const fetchMessages = useCallback(
     async (threadId: string) => {
       setMessages(await chatService.listMessages(threadId));

@@ -311,7 +311,7 @@ function AnimatedRoutes() {
         <Route
           path="/admin"
           element={
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
               <PageTransition>
                 <Dashboard />
               </PageTransition>
@@ -321,7 +321,7 @@ function AnimatedRoutes() {
         <Route
           path="/admin/users"
           element={
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
               <PageTransition>
                 <Users />
               </PageTransition>
@@ -331,7 +331,7 @@ function AnimatedRoutes() {
         <Route
           path="/admin/jobs"
           element={
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
               <PageTransition>
                 <AdminJobs />
               </PageTransition>
@@ -341,7 +341,7 @@ function AnimatedRoutes() {
         <Route
           path="/admin/proposals"
           element={
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute requiredRole="ADMIN">
               <PageTransition>
                 <AdminProposals />
               </PageTransition>

@@ -77,7 +77,7 @@ export function Header() {
                   </NavLink>
                 </>}
 
-              {user.role === 'admin' && <>
+              {user.role === 'ADMIN' && <>
                   <NavLink to="/admin" icon={LayoutDashboard}>
                     Dashboard
                   </NavLink>

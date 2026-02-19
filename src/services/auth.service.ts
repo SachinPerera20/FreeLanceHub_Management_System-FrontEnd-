@@ -28,6 +28,8 @@ export const authService = {
 
   async getMe(): Promise<SafeUser | null> {
     try {
+      const token = localStorage.getItem('uf_token');
+      if (!token) return null; //  don't even call the backend without a token
       const res = await api.get('/auth/me');
       const user: SafeUser = res.data;
       writeStore(STORAGE_KEYS.CURRENT_USER, user);

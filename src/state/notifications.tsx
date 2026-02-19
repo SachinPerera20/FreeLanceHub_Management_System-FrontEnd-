@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, createContext, useContext } fr
 import { Notification } from '../types';
 import { notificationsService } from '../services/notifications.service';
 import { useAuth } from './auth';
+
 interface NotificationsState {
   notifications: Notification[];
   unreadCount: number;
@@ -13,18 +14,15 @@ interface NotificationsState {
   markAllRead: () => Promise<void>;
   markAllAsRead: () => Promise<void>;
 }
+
 const NotificationsContext = createContext<NotificationsState | undefined>(undefined);
-export function NotificationsProvider({
-  children
 
-
-}: {children: ReactNode;}) {
+export function NotificationsProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const {
-    user
-  } = useAuth();
+  const { user } = useAuth();
+
   const fetchNotifications = useCallback(async (showLoader = true) => {
     if (!user) return;
     if (showLoader) setLoading(true);
@@ -34,41 +32,44 @@ export function NotificationsProvider({
   }, [user]);
 
   useEffect(() => {
-    fetchNotifications(true);  // show spinner on first load
-    const interval = setInterval(() => fetchNotifications(false), 3000);  // silent refresh
+    if (!user) return;
+    fetchNotifications(true);
+    const interval = setInterval(() => fetchNotifications(false), 3000);
     return () => clearInterval(interval);
-  }, [fetchNotifications]);
+  }, [user]);
+
   const markRead = useCallback(async (id: string) => {
     await notificationsService.markRead(id);
-    setNotifications((prev) => prev.map((n) => n.id === id ? {
-      ...n,
-      isRead: true
-    } : n));
+    setNotifications((prev) =>
+        prev.map((n) => n.id === id ? { ...n, isRead: true } : n)
+    );
     setUnreadCount((prev) => Math.max(0, prev - 1));
   }, []);
+
   const markAllRead = useCallback(async () => {
     if (!user) return;
     await notificationsService.markAllRead(user.id);
-    setNotifications((prev) => prev.map((n) => ({
-      ...n,
-      isRead: true
-    })));
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     setUnreadCount(0);
   }, [user]);
-  return <NotificationsContext.Provider value={{
-    notifications,
-    unreadCount,
-    loading,
-    isLoading: loading,
-    fetchNotifications,
-    markRead,
-    markAsRead: markRead,
-    markAllRead,
-    markAllAsRead: markAllRead
-  }}>
-      {children}
-    </NotificationsContext.Provider>;
+
+  return (
+      <NotificationsContext.Provider value={{
+        notifications,
+        unreadCount,
+        loading,
+        isLoading: loading,
+        fetchNotifications,
+        markRead,
+        markAsRead: markRead,
+        markAllRead,
+        markAllAsRead: markAllRead
+      }}>
+        {children}
+      </NotificationsContext.Provider>
+  );
 }
+
 export function useNotifications(): NotificationsState {
   const ctx = useContext(NotificationsContext);
   if (!ctx) throw new Error('useNotifications must be used within NotificationsProvider');

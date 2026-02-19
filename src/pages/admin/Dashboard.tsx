@@ -7,59 +7,33 @@ import { Users, Briefcase, FileText, DollarSign, Bell, ArrowRight } from 'lucide
 import { useAuth } from '../../state/auth';
 import { useJobs } from '../../state/jobs';
 import { useNotifications } from '../../state/notifications';
-import { STORAGE_KEYS, readStore } from '../../lib/storage';
-import type { Proposal, Contract } from '../../types';
+import { api } from '../../lib/axios';
+
 export function Dashboard() {
-  const {
-    getAllUsers
-  } = useAuth();
-  const {
-    jobs,
-    fetchJobs
-  } = useJobs();
-  const {
-    unreadCount
-  } = useNotifications();
+  const { getAllUsers } = useAuth();
+  const { jobs, fetchJobs } = useJobs();
+  const { unreadCount } = useNotifications();
   const [userCount, setUserCount] = useState(0);
   const [proposalCount, setProposalCount] = useState(0);
   const [contractCount, setContractCount] = useState(0);
+
   useEffect(() => {
     fetchJobs();
     getAllUsers().then((users) => setUserCount(users.length));
-    const proposals = readStore<Proposal[]>(STORAGE_KEYS.PROPOSALS, []);
-    setProposalCount(proposals.length);
-    const contracts = readStore<Contract[]>(STORAGE_KEYS.CONTRACTS, []);
-    setContractCount(contracts.length);
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    api.get('/proposals/all').then(res => setProposalCount(res.data.length)).catch(() => {});
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    api.get('/contracts/all').then(res => setContractCount(res.data.length)).catch(() => {});
   }, [fetchJobs, getAllUsers]);
-  const stats = [{
-    label: 'Total Users',
-    value: String(userCount),
-    icon: Users,
-    color: 'text-blue-400',
-    bg: 'bg-blue-900/20',
-    link: '/admin/users'
-  }, {
-    label: 'Active Jobs',
-    value: String(jobs.length),
-    icon: Briefcase,
-    color: 'text-teal-400',
-    bg: 'bg-teal-900/20',
-    link: '/admin/jobs'
-  }, {
-    label: 'Proposals',
-    value: String(proposalCount),
-    icon: FileText,
-    color: 'text-purple-400',
-    bg: 'bg-purple-900/20',
-    link: '/admin/proposals'
-  }, {
-    label: 'Contracts',
-    value: String(contractCount),
-    icon: DollarSign,
-    color: 'text-green-400',
-    bg: 'bg-green-900/20',
-    link: '/admin'
-  }];
+
+  const stats = [
+    { label: 'Total Users', value: String(userCount), icon: Users, color: 'text-blue-400', bg: 'bg-blue-900/20', link: '/admin/users' },
+    { label: 'Active Jobs', value: String(jobs.length), icon: Briefcase, color: 'text-teal-400', bg: 'bg-teal-900/20', link: '/admin/jobs' },
+    { label: 'Proposals', value: String(proposalCount), icon: FileText, color: 'text-purple-400', bg: 'bg-purple-900/20', link: '/admin/proposals' },
+    { label: 'Contracts', value: String(contractCount), icon: DollarSign, color: 'text-green-400', bg: 'bg-green-900/20', link: '/admin' }
+  ];
+
+  // rest of the JSX stays exactly the same, just remove the "Mock mode active" line
   return <Layout>
       <h1 className="text-3xl font-bold text-white mb-8">Admin Dashboard</h1>
 
@@ -118,7 +92,7 @@ export function Dashboard() {
               </span>
             </div>
             <div className="text-xs text-gray-500 mt-4">
-              Mock mode active — localStorage backend
+              {/*Mock mode active — localStorage backend*/}
             </div>
           </CardContent>
         </Card>

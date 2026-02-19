@@ -16,8 +16,11 @@ export function Chat() {
   } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
+    if (!user) return;
     fetchThreads();
-  }, [fetchThreads]);
+    const interval = setInterval(fetchThreads, 3000);
+    return () => clearInterval(interval);
+  }, [fetchThreads, user]);
   if (!user) return null;
   return <Layout>
       <div className="h-[calc(100vh-200px)] min-h-[500px] bg-[#111827] border border-gray-800 rounded-xl overflow-hidden flex shadow-2xl">
