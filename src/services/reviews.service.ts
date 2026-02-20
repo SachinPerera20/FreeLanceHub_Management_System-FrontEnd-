@@ -6,7 +6,6 @@ import {
   generateId,
   nowISO } from
 '../lib/storage';
-
 export const reviewsService = {
   async listByFreelancer(freelancerId: string): Promise<Review[]> {
     const reviews = readStore<Review[]>(STORAGE_KEYS.REVIEWS, []);
