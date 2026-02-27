@@ -1,11 +1,11 @@
-import { Proposal, CreateProposalInput, ProposalStatus } from '../types';
+import { Proposal, CreateProposalInput, ProposalStatus } from "../types";
 import {
   STORAGE_KEYS,
   readStore,
   writeStore,
   generateId,
-  nowISO } from
-'../lib/storage';
+  nowISO,
+} from "../lib/storage";
 
 export const proposalsService = {
   async listByJob(jobId: string): Promise<Proposal[]> {
@@ -20,10 +20,10 @@ export const proposalsService = {
     return all.filter((p) => p.freelancerId === freelancerId);
   },
   async createProposal(
-  input: CreateProposalInput,
-  freelancerId: string,
-  freelancerName: string)
-  : Promise<Proposal> {
+    input: CreateProposalInput,
+    freelancerId: string,
+    freelancerName: string,
+  ): Promise<Proposal> {
     const proposals = readStore<Proposal[]>(STORAGE_KEYS.PROPOSALS, []);
     const now = nowISO();
     const proposal: Proposal = {
@@ -34,35 +34,51 @@ export const proposalsService = {
       coverLetter: input.coverLetter,
       bidAmount: input.bidAmount,
       estimatedDays: input.estimatedDays,
-      status: 'pending',
+      status: "pending",
       submittedAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
     proposals.push(proposal);
     writeStore(STORAGE_KEYS.PROPOSALS, proposals);
     return proposal;
   },
   async updateStatus(
-  proposalId: string,
-  status: ProposalStatus)
-  : Promise<Proposal> {
+    proposalId: string,
+    status: ProposalStatus,
+  ): Promise<Proposal> {
     const proposals = readStore<Proposal[]>(STORAGE_KEYS.PROPOSALS, []);
     const idx = proposals.findIndex((p) => p.id === proposalId);
-    if (idx === -1) throw new Error('Proposal not found');
+    if (idx === -1) throw new Error("Proposal not found");
     proposals[idx].status = status;
     proposals[idx].updatedAt = nowISO();
     writeStore(STORAGE_KEYS.PROPOSALS, proposals);
     return proposals[idx];
   },
   async acceptProposal(proposalId: string): Promise<Proposal> {
-    return this.updateStatus(proposalId, 'accepted');
+    return this.updateStatus(proposalId, "accepted");
   },
   async rejectProposal(proposalId: string): Promise<Proposal> {
-    return this.updateStatus(proposalId, 'rejected');
+    return this.updateStatus(proposalId, "rejected");
   },
   async deleteProposal(proposalId: string): Promise<void> {
     let proposals = readStore<Proposal[]>(STORAGE_KEYS.PROPOSALS, []);
     proposals = proposals.filter((p) => p.id !== proposalId);
     writeStore(STORAGE_KEYS.PROPOSALS, proposals);
-  }
+  },
+  async updateProposal(
+    proposalId: string,
+    updates: { coverLetter: string; bidAmount: number; estimatedDays: number },
+  ): Promise<Proposal> {
+    const proposals = readStore<Proposal[]>(STORAGE_KEYS.PROPOSALS, []);
+    const idx = proposals.findIndex((p) => p.id === proposalId);
+    if (idx === -1) throw new Error("Proposal not found");
+    if (proposals[idx].status !== "pending")
+      throw new Error("Can only edit pending proposals");
+    proposals[idx].coverLetter = updates.coverLetter;
+    proposals[idx].bidAmount = updates.bidAmount;
+    proposals[idx].estimatedDays = updates.estimatedDays;
+    proposals[idx].updatedAt = nowISO();
+    writeStore(STORAGE_KEYS.PROPOSALS, proposals);
+    return proposals[idx];
+  },
 };
