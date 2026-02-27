@@ -391,6 +391,8 @@ export function Home() {
                     Blog
                   </Link>
                 </li>
+
+                
               </ul>
             </div>
 
